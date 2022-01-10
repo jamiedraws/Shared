@@ -3,7 +3,7 @@ $container: 1000px !default;
 $frame: 2rem !default;
 $space: 3rem !default;
 
-@mixin new {
+@mixin base {
     #{$select} {
         margin: 0;
 
