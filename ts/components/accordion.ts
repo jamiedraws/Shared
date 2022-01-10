@@ -1,4 +1,4 @@
-import { enumerateElements } from "../utils/html";
+import { enumerateElements } from "Shared/ts/utils/html";
 
 export default class Accordion {
     /**
