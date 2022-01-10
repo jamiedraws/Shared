@@ -1,0 +1,542 @@
+@use "sass:map";
+
+$select: ".nav" !default;
+
+$colors: () !default;
+$colors: map.merge(
+    (
+        background: black,
+        background-alternative: gray,
+        background-dropdown: white,
+        text-dropdown: black,
+        text: white,
+        button-open: currentColor,
+        button-close: currentColor
+    ),
+    $colors
+);
+
+$mq: () !default;
+$mq: map.merge(
+    (
+        container-min: 1000px,
+        container-max: 999px
+    ),
+    $mq
+);
+
+@use "../../origin/components/nav" with (
+    $background-color-dropdown: map.get($colors, background-dropdown),
+    $font-color-dropdown: map.get($colors, text-dropdown)
+);
+
+@use "../../origin/utils/vendor-rules";
+
+@mixin new {
+    @include is-hidden;
+    @include is-visible;
+
+    @include nav.ui(
+        (
+            vw: map.get($mq, container-min),
+            vw-max: map.get($mq, container-max),
+            select: $select
+        )
+    ) {
+        flex-wrap: wrap;
+        background: map.get($colors, background);
+        box-shadow: 0 0 1.25em rgba(0, 0, 0, 0.35);
+        font-size: 1rem;
+        position: sticky;
+        top: 0;
+        margin: 0;
+        transition: transform 0.15s ease-in-out;
+
+        color: map.get($colors, text);
+
+        &--is-hidden {
+            transform: translateY(-100%);
+        }
+
+        &__in {
+            align-items: center;
+        }
+
+        &__label {
+            &::before,
+            &::after,
+            > span {
+                background: map.get($colors, button-open);
+            }
+        }
+
+        &__pane {
+            flex: 1 1 auto;
+            position: relative;
+
+            &::before,
+            &::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                transition: opacity 0.3s ease-in-out;
+            }
+
+            &::before {
+                background: map.get($colors, background);
+            }
+        }
+
+        &__underlay {
+            position: fixed;
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        &__toggle:checked ~ label {
+            z-index: 5;
+        }
+
+        &__pane > &__group {
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        &__list,
+        &__title {
+            flex: 1 1 100%;
+        }
+
+        &__header {
+            flex: 1 1 100%;
+            padding: 2rem 0;
+        }
+
+        &__title {
+            margin: auto;
+            align-items: center;
+        }
+
+        &__list {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+        }
+
+        &__link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        &__logo {
+            position: relative;
+            padding: 1rem;
+            flex: 0 1 auto;
+        }
+
+        &--is-end-page &__group {
+            justify-content: center;
+        }
+
+        &__drop {
+            position: relative;
+            z-index: 1;
+
+            &:hover,
+            &:focus,
+            &--is-selected {
+                z-index: 2;
+            }
+
+            &:focus-within {
+                z-index: 2;
+            }
+
+            &:hover:not(:focus-within) {
+                z-index: 3;
+            }
+        }
+
+        @content;
+    }
+}
+
+@mixin remove-bar {
+    @media all and (min-width: map.get($mq, container-min)) {
+        #{$select} {
+            display: none;
+
+            @content;
+        }
+    }
+}
+
+@mixin dropdown-grid {
+    @media all and (min-width: map.get($mq, container-min)) {
+        #{$select} {
+            &__drop--grid &__group {
+                min-width: 60rem;
+            }
+
+            &__drop--grid &__list > a {
+                flex-basis: 27rem;
+            }
+        }
+    }
+}
+
+@mixin dropdown-stack {
+    @media all and (min-width: map.get($mq, container-min)) {
+        #{$select} {
+            &__drop--stack &__group {
+                min-width: 40rem;
+            }
+
+            &__drop--stack &__drop__link {
+                margin-left: 1.5rem;
+            }
+        }
+    }
+
+    @media all and (max-width: map.get($mq, container-min)) {
+        #{$select} {
+            &__drop--stack &__drop__link {
+                margin-left: 1rem;
+            }
+        }
+    }
+}
+
+@mixin bar {
+    @media all and (min-width: map.get($mq, container-min)) {
+        #{$select} {
+            margin: 0;
+
+            &--is-start-page &__in > &__logo {
+                display: none;
+            }
+
+            &__list {
+                #{$select} {
+                    &__link--for-drawer {
+                        display: none;
+                    }
+                }
+
+                > a {
+                    flex-basis: auto;
+                    flex-grow: 0;
+                }
+            }
+
+            &__pane {
+                &::after {
+                    background: map.get($colors, background);
+                }
+
+                a:focus {
+                    outline-color: currentColor;
+                }
+            }
+
+            &--is-primed {
+                .nav {
+                    &__logo,
+                    &__deal {
+                        @include vendor-rules.vendor-rule(
+                            animation,
+                            is-hidden 0.3s ease-in-out forwards
+                        );
+                    }
+                }
+            }
+
+            &__link,
+            &__drop {
+                text-align: center;
+            }
+
+            &__drop {
+                max-width: 15rem;
+
+                &__group {
+                    box-shadow: -5px 7px 6px rgba(0, 0, 0, 0.25);
+                }
+            }
+
+            &--is-fixed {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                margin: auto;
+                width: 100%;
+
+                @supports (position: sticky) {
+                    position: sticky;
+                }
+
+                a:focus {
+                    outline-color: currentColor;
+                }
+
+                .nav {
+                    &__list {
+                        @include transition-opacity-transform(1, 0, false);
+                    }
+
+                    &__pane {
+                        &::after {
+                            opacity: 0;
+                        }
+                    }
+
+                    &__link--order {
+                        display: none;
+                    }
+
+                    &__logo,
+                    &__deal {
+                        @include vendor-rules.vendor-rule(
+                            animation,
+                            is-visible 0.3s ease-in-out forwards
+                        );
+                    }
+                }
+            }
+
+            @content;
+        }
+    }
+}
+
+@mixin drawer {
+    @media all and (max-width: map.get($mq, container-max)) {
+        #{$select} {
+            background: map.get($colors, background);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 6;
+
+            &__in {
+                flex-wrap: nowrap;
+            }
+
+            &__list {
+                flex-wrap: wrap;
+            }
+
+            &--is-fixed {
+                position: sticky;
+            }
+
+            & > &__logo {
+                flex-basis: 15em;
+            }
+
+            &__label {
+                width: auto;
+                flex: 0 0 2.5em;
+                margin-right: 0.5em;
+
+                color: map.get($colors, button-open);
+                border-color: currentColor;
+            }
+
+            &__group > &__label {
+                order: 1;
+            }
+
+            &__group > &__profile {
+                margin-left: auto;
+                padding: 0 1.5rem;
+            }
+
+            &__toggle:checked ~ &__label,
+            &__label--is-selected {
+                color: map.get($colors, button-close);
+            }
+
+            &__toggle:checked ~ &__label,
+            &__label--is-selected {
+                &::before,
+                &::after,
+                > span {
+                    background: map.get($colors, button-close);
+                }
+            }
+
+            &__pane {
+                background: map.get($colors, background);
+                z-index: 4;
+
+                #{$select} {
+                    &__logo {
+                        margin: 1rem;
+                    }
+
+                    &__title {
+                        padding: 1rem;
+                    }
+                }
+            }
+
+            &__title {
+                text-align: left;
+                display: block;
+                font-size: 1.75em;
+            }
+
+            &__list {
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                border: none;
+            }
+
+            @content;
+        }
+    }
+}
+
+@mixin profile {
+    #{$select} {
+        &__profile {
+            display: flex;
+            flex-wrap: wrap;
+            flex: 0 0 auto;
+            justify-content: space-around;
+
+            > * {
+                flex: 0 0 4em;
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: center;
+            }
+
+            @media all and (max-width: 600px) {
+                font-size: 1rem;
+            }
+        }
+
+        &__group > &__profile {
+            font-size: 0.75em;
+        }
+
+        &__profile &__label {
+            display: inline-flex;
+        }
+    }
+}
+
+@mixin icon-button {
+    #{$select} {
+        &__icon-button {
+            display: flex;
+            flex-wrap: wrap;
+            flex: 0 0 auto;
+            min-width: 5em;
+            justify-content: space-around;
+
+            > * {
+                flex: 0 0 4rem;
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        &__icon-button > &__icon-text {
+            flex: 1 1 auto;
+        }
+
+        &__icon-button &__label {
+            display: inline-flex;
+        }
+    }
+}
+
+@mixin standalone {
+    #{$select} {
+        &__standalone {
+            margin: auto;
+        }
+    }
+}
+
+@mixin icon-text {
+    #{$select} {
+        &__icon-text {
+            position: relative;
+
+            > * {
+                display: flex;
+                align-items: center;
+                isolation: isolate;
+            }
+        }
+
+        &__text {
+            margin-left: 0.5rem;
+        }
+
+        &__icon {
+            flex-shrink: 0;
+            font-size: 1.25em;
+        }
+    }
+}
+
+@mixin transition-opacity-transform(
+    $opacity: 0,
+    $translateX: 0,
+    $transition: true
+) {
+    opacity: $opacity;
+    transform: translateX($translateX);
+    @if ($transition) {
+        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    }
+
+    @content;
+}
+
+@mixin is-visible($translate: translateX(0), $opacity: 0) {
+    @include vendor-rules.keyframes(is-visible) {
+        0% {
+            visibility: visible;
+            transform: $translate;
+            opacity: $opacity;
+        }
+        100% {
+            transform: translate(0);
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+}
+
+@mixin is-hidden($translate: translateX(0), $opacity: 0) {
+    @include vendor-rules.keyframes(is-hidden) {
+        0% {
+            visibility: visible;
+            transform: translate(0);
+            opacity: 1;
+        }
+        99% {
+            transform: $translate;
+            opacity: $opacity;
+            visibility: visible;
+        }
+        100% {
+            visibility: hidden;
+        }
+    }
+}

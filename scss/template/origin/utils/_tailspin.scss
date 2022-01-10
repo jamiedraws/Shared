@@ -1,0 +1,164 @@
+@use "sass:math";
+
+@use "extend";
+@use "colors";
+@use "animation-fade";
+@use "animation-rotate";
+
+$theme-tailspin: (
+    color: #252525,
+    curve: cubic-bezier(0.5, 0.4, 0.5, 0.6)
+);
+
+@mixin css-tailspin() {
+    @include animation-fade.fade-in;
+    @include animation-fade.fade-out;
+    @include animation-rotate.rotate-cycle;
+}
+
+@mixin css-cross() {
+    @-webkit-keyframes svg-cross {
+        from {
+            opacity: 0;
+            transform: scale(0.7);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes svg-cross {
+        from {
+            opacity: 0;
+            transform: scale(0.7);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+}
+
+@mixin svg-tailspin($conf-svg-tailspin: ()) {
+    $conf-svg-tailspin: extend.extend(
+        (
+            size: 3em,
+            fill: false,
+            stroke: map-get($theme-tailspin, color),
+            iterate: 60,
+            delay: 0.1s,
+            ondemand: false
+        ),
+        $conf-svg-tailspin
+    );
+
+    $duration: 0.7;
+    $iterate: map-get($conf-svg-tailspin, iterate);
+    $timeout: $duration * math.div($iterate, 1.1);
+
+    $stroke: map-get($conf-svg-tailspin, stroke);
+    $fill: map-get($conf-svg-tailspin, fill);
+
+    @if not $stroke {
+        $stroke: none;
+    } @else {
+        $stroke: colors.get-hsla($stroke, 1, true);
+    }
+
+    @if not $fill {
+        $fill: none;
+    } @else {
+        $fill: colors.get-hsla($fill, 1, true);
+    }
+
+    display: block;
+    padding: 12%;
+    -webkit-transform-origin: center center;
+    transform-origin: center center;
+    opacity: 0;
+    will-change: transform;
+    contain: strict;
+
+    -webkit-animation: fade-in #{map-get($conf-svg-tailspin, delay)} ease-in forwards,
+        rotate-cycle #{$duration}s #{map-get($theme-tailspin, curve)} #{$iterate}
+            forwards,
+        fade-out #{map-get($conf-svg-tailspin, delay)} ease-in #{$timeout}s forwards;
+    animation: fade-in #{map-get($conf-svg-tailspin, delay)} ease-in forwards,
+        rotate-cycle #{$duration}s #{map-get($theme-tailspin, curve)} #{$iterate}
+            forwards,
+        fade-out #{map-get($conf-svg-tailspin, delay)} ease-in #{$timeout}s forwards;
+
+    @if not(map-get($conf-svg-tailspin, ondemand)) {
+        animation-play-state: paused;
+    }
+
+    background: url("data:image/svg+xml;charset=utf8,\
+    %3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='xMidYMid'%3E\
+        %3Cpath stroke='#{$stroke}' d='M10 50A40 40 0 0 0 90 50A40 42 0 0 1 10 50' fill='#{$fill}'%3E%3C/path%3E\
+    %3C/svg%3E")
+        no-repeat center center;
+
+    width: 50%;
+    height: 50%;
+    background-size: 50%;
+    max-width: #{map-get($conf-svg-tailspin, size)};
+    max-height: #{map-get($conf-svg-tailspin, size)};
+}
+
+@mixin svg-cross($conf-svg-tailspin: ()) {
+    $conf-svg-tailspin: extend.extend(
+        (
+            size: 2em,
+            fill: map-get($theme-tailspin, color),
+            duration: 0.3s,
+            stroke: false
+        ),
+        $conf-svg-tailspin
+    );
+
+    $stroke: map-get($conf-svg-tailspin, stroke);
+    $fill: map-get($conf-svg-tailspin, fill);
+
+    @if not $stroke {
+        $stroke: none;
+    } @else {
+        $stroke: colors.get-hsla($fill, 1, true);
+    }
+
+    @if not $fill {
+        $fill: none;
+    } @else {
+        $fill: colors.get-hsla($fill, 1, true);
+    }
+
+    display: block;
+    padding: 2%;
+    -webkit-transform-origin: center center;
+    transform-origin: center center;
+    opacity: 0;
+
+    -webkit-animation: svg-cross #{map-get($conf-svg-tailspin, duration)} cubic-bezier(
+            0.19,
+            1,
+            0.22,
+            1
+        ) forwards;
+    animation: svg-cross #{map-get($conf-svg-tailspin, duration)} cubic-bezier(
+            0.19,
+            1,
+            0.22,
+            1
+        ) forwards;
+
+    background: url("data:image/svg+xml;charset=utf8,\
+    %3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 612 612' preserveAspectRatio='xMidYMid'%3E\
+        %3Cpolygon stroke='#{$stroke}' points='612,36.004 576.521,0.603 306,270.608 35.478,0.603 0,36.004 270.522,306.011 0,575.997 35.478,611.397 306,341.411 576.521,611.397 612,575.997 341.459,306.011' fill='#{$fill}'/%3E\
+    %3C/svg%3E")
+        no-repeat center center;
+    background-size: 50%;
+    width: 50%;
+    height: 50%;
+    max-width: #{map-get($conf-svg-tailspin, size)};
+    max-height: #{map-get($conf-svg-tailspin, size)};
+}

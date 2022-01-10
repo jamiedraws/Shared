@@ -1,0 +1,29 @@
+$select: ".defer" !default;
+
+@use "../media/load-item";
+
+@mixin new {
+    @include load-item.new($select) {
+        &--from-top {
+            overflow: initial;
+
+            &::after {
+                bottom: auto;
+            }
+        }
+    }
+
+    #{$select} {
+        @content;
+    }
+}
+
+@mixin set-offset($amount: 0) {
+    #{$select} {
+        &--from-top {
+            &::after {
+                top: calc(30vh - #{$amount});
+            }
+        }
+    }
+}

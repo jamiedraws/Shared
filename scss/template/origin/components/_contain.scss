@@ -1,0 +1,28 @@
+@use "../utils/arp";
+
+$select: ".contain" !default;
+
+@mixin new {
+    #{$select} {
+        @include container;
+
+        &__item {
+            @include arp.fill;
+        }
+
+        @content;
+    }
+}
+
+@mixin ratio($ratio: 1/1) {
+    &::before {
+        @include arp.ratio($ratio);
+    }
+
+    @content;
+}
+
+@mixin container {
+    @include arp.container;
+    @include arp.pseudo;
+}

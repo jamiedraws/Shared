@@ -1,0 +1,19 @@
+@use "../../origin/utils/arp";
+
+$select: ".load-item" !default;
+
+@mixin new($select: $select, $use-arp: true) {
+    @include arp.defer(
+        (
+            select: "#{$select}",
+            load-item: "#{$select}"
+        )
+    );
+
+    #{$select} {
+        @include arp.container;
+        @include arp.pseudo($fill: $use-arp);
+
+        @content;
+    }
+}

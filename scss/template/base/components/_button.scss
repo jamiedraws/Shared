@@ -1,0 +1,115 @@
+@use "../../origin/components/button";
+
+$select: ".button" !default;
+
+@mixin new(
+    $background-color: black,
+    $color-second: white,
+    $border-color: $background-color
+) {
+    @include button.model($select) {
+        border: 2px solid;
+
+        @include color-map($background-color, $color-second, $border-color);
+        @content;
+    }
+}
+
+@mixin flat {
+    @include button.flat($select);
+}
+
+@mixin capsule {
+    @include button.capsule($select);
+}
+
+@mixin classic {
+    @include button.classic($select);
+}
+
+@mixin color-map(
+    $background-color: black,
+    $text-color: white,
+    $border-color: $background-color
+) {
+    background: $background-color;
+    border-color: $border-color;
+    color: $text-color;
+
+    &::before {
+        background: $background-color;
+    }
+
+    &::after {
+        background: $text-color;
+    }
+
+    &:hover,
+    &:focus,
+    &#{$select}--is-active {
+        color: $background-color;
+    }
+
+    &#{$select}--is-active::after {
+        opacity: 1;
+    }
+}
+
+@mixin name-color-map(
+    $namespace: "first",
+    $background-color: black,
+    $text-color: white
+) {
+    #{$select} {
+        &--#{$namespace} {
+            @include color-map($background-color, $text-color);
+        }
+    }
+}
+
+@mixin name-color-map-contrast(
+    $namespace: "first",
+    $background-color: black,
+    $text-color: white
+) {
+    @include name-color-map($namespace, $background-color, $text-color);
+    @include name-color-map(
+        "#{$namespace}-contrast",
+        $text-color,
+        $background-color
+    );
+}
+
+@mixin express-checkout {
+    #{$select} {
+        &--express-checkout {
+            &[data-state] {
+                transition: border-color 0.3s ease-in-out;
+            }
+
+            &:not([data-state="card"]) {
+                padding: 2px;
+                background: transparent;
+
+                &::before {
+                    background: transparent;
+                }
+
+                &:not(:hover):not(:focus) {
+                    border-color: transparent;
+                }
+
+                :not(#{$select}__state),
+                > span {
+                    display: none;
+                }
+            }
+
+            &[data-state="card"] {
+                > img {
+                    display: none;
+                }
+            }
+        }
+    }
+}

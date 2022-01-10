@@ -1,0 +1,529 @@
+@use "sass:map";
+@use "../abstracts/group";
+@use "../utils/color";
+
+$select: ".form" !default;
+
+$colors: (
+    border: currentColor,
+    field-background: white,
+    valid: green,
+    invalid: #c00
+) !default;
+
+$mq: (
+    desktop: 1200px
+) !default;
+
+@mixin new {
+    #{$select} {
+        min-width: 0;
+
+        &__title {
+            font-size: 3.6rem;
+
+            @media all and (max-width: map.get($mq, desktop)) {
+                font-size: clamp(2.5rem, 7vw, 3.6rem);
+            }
+
+            text-align: center;
+            margin: 1rem;
+        }
+
+        &__is-hidden {
+            display: none;
+        }
+
+        &__contain {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: stretch;
+            justify-content: space-between;
+            border: solid transparent;
+            border-width: 3px;
+
+            min-width: 0;
+            min-inline-size: 0;
+
+            > * {
+                flex: 0 1 auto;
+            }
+        }
+
+        &__field {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            min-width: 0;
+
+            padding: 1rem;
+            margin: 0;
+            -webkit-appearance: none;
+            appearance: none;
+            border: 0;
+            background: white;
+            color: black;
+            font-family: inherit;
+        }
+
+        &__error {
+            color: map.get($colors, invalid);
+            font-weight: bold;
+        }
+
+        @content;
+    }
+}
+
+@mixin fieldset {
+    #{$select} {
+        &__fieldset {
+            border: 0;
+            display: flex;
+            flex-wrap: wrap;
+            @include group.gutter(1rem);
+
+            > * {
+                flex: 1 1 15rem;
+            }
+        }
+    }
+}
+
+@mixin icon-field-combobox {
+    #{$select} {
+        &--icon-field-combobox {
+            #{$select} {
+                &__contain {
+                    border: 1px solid map.get($colors, border);
+                    border-radius: 5px;
+                    overflow: hidden;
+                    background: white;
+                    min-height: 3.75em;
+                }
+
+                &__input {
+                    $basis: 2rem;
+
+                    text-align: center;
+                    flex: 2 1 $basis;
+                    width: $basis;
+                    display: inline-flex;
+                    align-items: center;
+                    outline: 0;
+                    border: 0;
+
+                    &,
+                    &[disabled] {
+                        opacity: 1;
+                    }
+
+                    &::-webkit-inner-spin-button,
+                    &::-webkit-outer-spin-button {
+                        -webkit-appearance: none;
+                        appearance: none;
+                    }
+                }
+
+                &__button {
+                    flex: 1 1 4em;
+                    justify-content: center;
+                    max-width: 4em;
+                    min-height: 4em;
+                    font-size: 0.9em;
+                    outline: 1px solid map.get($colors, border);
+                    position: relative;
+
+                    &::before {
+                        position: absolute;
+                        top: 0;
+                        right: 0;
+                        left: 0;
+                        bottom: 0;
+                        margin: auto;
+                        content: "";
+                        background: whitesmoke;
+                        opacity: 0;
+                        transition: opacity 0.3s ease-in-out;
+                    }
+
+                    > * {
+                        position: relative;
+                    }
+
+                    &:hover,
+                    &:focus {
+                        &::before {
+                            opacity: 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@mixin label-combobox {
+    #{$select} {
+        &--label-combobox {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+
+            @include group.gutter-with-side-reset(1rem, true, true);
+
+            #{$select} {
+                &__label {
+                    flex: 0 1 auto;
+                }
+
+                &__contain {
+                    flex: 0 1 12em;
+                }
+            }
+        }
+    }
+}
+
+@mixin select {
+    #{$select} {
+        &--select {
+            #{$select} {
+                &__contain {
+                    position: relative;
+                }
+
+                &__field {
+                    // height: 5rem;
+                    @supports (height: auto) {
+                        height: auto;
+                    }
+                    flex: 1;
+                }
+
+                &__button {
+                    position: absolute;
+                    right: 0;
+                    top: 0;
+                    bottom: 0;
+                    width: 6rem;
+                    min-height: 0;
+                    margin: 2px;
+                    height: calc(100% - 4px);
+                    pointer-events: none;
+                    justify-content: center;
+                    background: transparent;
+                    border: 0;
+                    outline: 0;
+                    background: white;
+
+                    &::before {
+                        content: "";
+                        height: 100%;
+                        width: 1px;
+                        background: map.get($colors, border);
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@mixin combobox-list {
+    #{$select} {
+        &--combobox-list {
+            position: relative;
+
+            #{$select} {
+                &__list {
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    right: 0;
+                    transition: all 0.3s ease-in-out;
+                    opacity: 0;
+                    pointer-events: none;
+                    visibility: hidden;
+                    flex-direction: column;
+                }
+
+                &__option {
+                    outline: 0;
+                    position: relative;
+                    transition: all 0.3s ease-in-out;
+                    background: white;
+
+                    &:hover,
+                    &:focus {
+                        background: white;
+                        color: white;
+                    }
+                }
+
+                &__trigger + #{$select}__list {
+                    opacity: 1;
+                    visibility: visible;
+                    pointer-events: all;
+                }
+            }
+        }
+    }
+}
+
+@mixin field-button($input-basis: 200px, $button-basis: 200px) {
+    flex-wrap: wrap;
+
+    > input {
+        flex: 1 1 $input-basis;
+    }
+
+    > button {
+        flex: 1 1 $button-basis;
+    }
+
+    @content;
+}
+
+@mixin search {
+    #{$select} {
+        &--search {
+            #{$select} {
+                &__contain {
+                    flex: 1;
+                    justify-content: center;
+
+                    > * {
+                        display: flex;
+                        align-items: center;
+                        margin: 1rem;
+                    }
+
+                    button {
+                        justify-content: center;
+                    }
+                }
+            }
+            @content;
+        }
+    }
+}
+
+@mixin field-icon {
+    #{$select} {
+        &__field-icon {
+            input {
+                border-bottom: 3px solid currentColor;
+            }
+
+            button {
+                flex: 0 0 50px;
+            }
+        }
+    }
+}
+
+@mixin underline {
+    #{$select} {
+        &--underline &__contain {
+            border-bottom-color: currentColor;
+        }
+    }
+}
+
+@mixin contrast {
+    #{$select} {
+        &--contrast {
+            @include color;
+        }
+    }
+}
+
+@mixin field-label(
+    $border: map.get($colors, border),
+    $label-order: -1,
+    $background-color: map.get($colors, field-background)
+) {
+    #{$select} {
+        &__city-state-zip {
+            align-items: flex-end;
+
+            #{$select} {
+                &__field-label {
+                    flex: 1 1 20rem;
+                }
+            }
+        }
+
+        &__cvv {
+            #{$select} {
+                &__field {
+                    flex: 0 1 20rem;
+                }
+
+                &__link {
+                    align-self: center;
+                    flex: 0 1 auto;
+                    padding: 1rem;
+                    margin: 0 1rem;
+                    font-size: 1.5rem;
+                }
+            }
+        }
+
+        &__field-label {
+            display: flex;
+            flex-wrap: wrap;
+            font-size: 1.2rem;
+
+            > * + * {
+                margin-top: 0.5rem;
+            }
+
+            > * {
+                flex: 1 1 100%;
+            }
+
+            label {
+                font-size: 1.6em;
+                order: #{$label-order};
+            }
+
+            #{$select} {
+                &__field {
+                    border: 1px solid #{$border};
+                    background: #{$background-color};
+                }
+
+                &__label {
+                    font-size: 1.6em;
+                    order: #{$label-order};
+                }
+
+                &__contain {
+                    border: 0;
+                }
+            }
+        }
+    }
+}
+
+@mixin field-button-label {
+    #{$select} {
+        &__field-button-label {
+            @include field-button(25rem, 11rem);
+            @include group.gutter();
+        }
+    }
+}
+
+@mixin color($color: white) {
+    #{$select} {
+        &__contain {
+            background: $color;
+            border-color: $color;
+        }
+    }
+}
+
+@mixin checkbox(
+    $size: 2rem,
+    $border-radius: 0.5rem,
+    $icon-color: map.get($colors, valid),
+    $background-color: white
+) {
+    #{$select} {
+        &__checkbox-label {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+
+            #{$select}__label {
+                display: flex;
+            }
+
+            input[type="checkbox"],
+            input[type="radio"] {
+                opacity: 0;
+                position: absolute;
+                padding: 0;
+
+                &:checked ~ #{$select}__checkbox,
+                &:checked ~ #{$select}__label > #{$select}__checkbox {
+                    background-image: url("data:image/svg+xml;charset=utf8,\
+                        %3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E\
+                            %3Cpath fill='none' stroke-width='3px' stroke='#{color.convert-to-hex($icon-color)}' d='M1.73,12.91 8.1,19.28 22.79,4.59'%3E%3C/path%3E\
+                        %3C/svg%3E");
+                    background-size: 0.9em 0.9em;
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    background-color: $background-color;
+                }
+
+                &:not(:checked) ~ #{$select}__expando {
+                    display: none;
+                }
+
+                ~ #{$select}__checkbox,
+                ~ #{$select}__label > #{$select}__checkbox {
+                    margin-right: 1rem;
+                }
+
+                &:focus ~ #{$select}__checkbox,
+                &:focus ~ #{$select}__label > #{$select}__checkbox {
+                    outline: 3px solid;
+                }
+
+                &:disabled ~ #{$select}__label {
+                    opacity: 0.5;
+                }
+            }
+        }
+
+        &__checkbox {
+            display: block;
+            -webkit-appearance: none;
+            border: 1px solid map.get($colors, border);
+            border-radius: #{$border-radius};
+            background: white;
+            font-family: inherit;
+            font-size: inherit;
+
+            width: #{$size};
+            height: #{$size};
+            flex: 0 0 #{$size};
+            padding: 0;
+            box-sizing: content-box;
+
+            position: relative;
+        }
+
+        @content;
+    }
+}
+
+@mixin state-tax {
+    #{$select}--state-tax {
+        flex: 1 1 20rem;
+
+        label {
+            flex: 0 1 auto;
+        }
+
+        #{$select} {
+            &__field-label {
+                align-items: center;
+                @include group.gutter;
+            }
+
+            &__field {
+                flex: 1 1 5rem;
+                margin-top: -1.5rem;
+                margin-bottom: -1.5rem;
+            }
+        }
+    }
+}

@@ -1,0 +1,23 @@
+@use "vendor-rules";
+
+@mixin fade-in() {
+    @include vendor-rules.keyframes(fade-in) {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+}
+
+@mixin fade-out() {
+    @include vendor-rules.keyframes(fade-out) {
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+        }
+    }
+}

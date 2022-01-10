@@ -1,0 +1,40 @@
+@use "../utils/extend";
+
+%list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+@mixin model ( $conf : () ) {
+    $conf : extend.extend( 
+        (
+            select : '.list',
+            child : 'a',
+            direction : row,
+            basis : 10em,
+            background-before: white,
+            background-after: #e8e8e8
+        ), $conf
+    );
+
+    #{map-get($conf, select)} {
+        @extend %list;
+
+        flex-direction: #{map-get($conf, direction)};
+
+        & > #{map-get($conf, child)} {
+            flex: 1 1 #{map-get($conf, basis)};
+        }
+
+        & > #{map-get($conf, child)}::before {
+            background: #{map-get($conf, background-before)};
+        }
+
+        & > #{map-get($conf, child)}::after {
+            background: #{map-get($conf, background-after)};
+        }
+
+        @content;
+    }
+}

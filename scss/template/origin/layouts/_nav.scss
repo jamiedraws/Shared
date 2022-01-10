@@ -1,0 +1,461 @@
+$select: ".nav" !default;
+
+$breakpoint: 1000px !default;
+$breakpoint-max: 999px !default;
+
+$background-color: black !default;
+$background-color-alternative: gray !default;
+$background-color-dropdown: white !default;
+
+$font-color: white !default;
+$font-color-dropdown: black !default;
+
+$open-button-color: currentColor !default;
+$close-button-color: currentColor !default;
+
+@use "../components/nav" with (
+	$background-color-dropdown: $background-color-dropdown,
+    $font-color-dropdown: $font-color-dropdown,
+    $open-button-color: $open-button-color
+);
+@use "../utils/vendor-rules";
+
+@mixin new {
+    @include is-hidden;
+    @include is-visible;
+
+    @include nav.ui(
+        (
+            vw: $breakpoint,
+            vw-max: $breakpoint-max,
+            select: $select
+        )
+    ) {
+        flex-wrap: wrap;
+        background: $background-color;
+        color: $font-color;
+        box-shadow: 0 0 1.25em rgba(0, 0, 0, 0.35);
+        font-size: 1rem;
+        position: sticky;
+        top: 0;
+        margin: 0;
+        transition: transform 0.15s ease-in-out;
+
+        &--is-hidden {
+            transform: translateY(-100%);
+        }
+
+        &__in {
+            align-items: center;
+        }
+
+        &__label {
+            &::before,
+            &::after,
+            > span {
+                background: $open-button-color;
+            }
+        }
+
+        &__pane {
+            flex: 1 1 auto;
+            position: relative;
+
+            &::before,
+            &::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                transition: opacity 0.3s ease-in-out;
+            }
+
+            &::before {
+                background: $background-color;
+            }
+        }
+
+        &__underlay {
+            position: fixed;
+            z-index: 4;
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        &__toggle:checked ~ label {
+            z-index: 5;
+        }
+
+        &__pane > &__group {
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        &__list,
+        &__title {
+            flex: 1 1 100%;
+        }
+
+        &__header {
+            flex: 1 1 100%;
+            padding: 2rem 0;
+        }
+
+        &__title {
+            margin: auto;
+            align-items: center;
+        }
+
+        &__list {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+        }
+
+        &__link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        &__link {
+            padding: 2rem;
+        }
+
+        &__list > &__logo {
+            padding: 0;
+        }
+
+        &__logo {
+            position: relative;
+
+            img {
+                display: block;
+                max-width: 100%;
+                width: auto;
+                height: auto;
+            }
+        }
+
+        & &__logo {
+            flex: 0 1 auto;
+        }
+
+        &--is-end-page &__group {
+            justify-content: center;
+        }
+
+        @content;
+    }
+}
+
+@mixin remove-bar {
+    @media all and (min-width: $breakpoint) {
+        #{$select} {
+            display: none;
+
+            @content;
+        }
+    }
+}
+
+@mixin bar {
+    @media all and (min-width: $breakpoint) {
+        #{$select} {
+            margin: 0;
+
+            &--is-start-page &__in > &__logo {
+                display: none;
+            }
+
+            &__list {
+                #{$select} {
+                    &__logo,
+                    &__link--for-drawer {
+                        display: none;
+                    }
+                }
+
+                > a {
+                    flex-basis: auto;
+                }
+            }
+
+            &__pane {
+                &::after {
+                    background: $background-color;
+                }
+
+                a:focus {
+                    outline-color: currentColor;
+                }
+            }
+
+            &--is-primed {
+                #{$select} {
+                    &__logo {
+                        @include vendor-rules.vendor-rule(
+                            animation,
+                            is-hidden 0.3s ease-in-out forwards
+                        );
+                    }
+                }
+            }
+
+            &__link,
+            &__drop {
+                text-align: center;
+            }
+
+            &__drop {
+                max-width: 13rem;
+
+                &__group {
+                    min-width: 80rem;
+                    box-shadow: -5px 7px 6px rgba(0, 0, 0, 0.25);
+                }
+            }
+
+            &__menu--stack &__list > a {
+                flex-basis: 27rem;
+            }
+
+            &--is-fixed {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                margin: auto;
+                width: 100%;
+
+                @supports (position: sticky) {
+                    position: sticky;
+                }
+
+                a:focus {
+                    outline-color: currentColor;
+                }
+
+                #{$select} {
+                    &__list {
+                        @include transition-opacity-transform(1, 0, false);
+                    }
+
+                    &__pane {
+                        &::after {
+                            opacity: 0;
+                        }
+                    }
+
+                    &__link--order {
+                        display: none;
+                    }
+
+                    &__logo {
+                        @include vendor-rules.vendor-rule(
+                            animation,
+                            is-visible 0.3s ease-in-out forwards
+                        );
+                    }
+                }
+            }
+
+            @content;
+        }
+    }
+}
+
+@mixin drawer {
+    @media all and (max-width: $breakpoint-max) {
+        #{$select} {
+            background: $background-color;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            &__in {
+                flex-wrap: nowrap;
+            }
+
+            &__list {
+                flex-wrap: wrap;
+            }
+
+            &--is-fixed {
+                position: sticky;
+            }
+
+            & > &__logo {
+                flex-basis: 15em;
+            }
+
+            &__label {
+                width: auto;
+                flex: 0 0 2.5em;
+                border-color: $open-button-color;
+            }
+
+            &__group > &__label {
+                margin: 0 1rem 0 auto;
+                order: 1;
+            }
+
+            &__toggle:checked ~ &__label,
+            &__label--is-selected {
+                border-color: $close-button-color;
+            }
+
+            &__toggle:checked ~ &__label,
+            &__label--is-selected {
+                &::before,
+                &::after,
+                > span {
+                    background: $close-button-color;
+                }
+            }
+
+            &__pane {
+                background: $background-color;
+                z-index: 4;
+
+                #{$select} {
+                    &__logo {
+                        margin: 1rem;
+                    }
+
+                    &__title {
+                        padding: 1rem;
+                    }
+                }
+            }
+
+            &__title {
+                text-align: left;
+                display: block;
+                font-size: 1.75em;
+            }
+
+            &__list {
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                border: none;
+            }
+
+            @content;
+        }
+    }
+}
+
+@mixin profile {
+    #{$select} {
+        &__profile {
+            display: flex;
+            flex-wrap: wrap;
+            flex: 0 0 auto;
+            justify-content: space-around;
+
+            > * {
+                flex: 0 0 4em;
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: center;
+            }
+
+            @media all and (max-width: 600px) {
+                font-size: 1rem;
+            }
+        }
+
+        &__group > &__profile {
+            font-size: 0.75em;
+        }
+
+        &__profile &__label {
+            display: inline-flex;
+        }
+
+        @media all and (max-width: $breakpoint-max) {
+            &__group > &__profile {
+                margin-left: auto;
+                padding: 0 1.5rem;
+            }
+        }
+    }
+}
+
+@mixin standalone {
+    #{$select} {
+        &__standalone {
+            margin: auto;
+        }
+    }
+}
+
+@mixin icon-text {
+    #{$select} {
+        &__icon-text {
+            position: relative;
+            flex-grow: 1;
+
+            > * {
+                font-size: 1.75em;
+                display: flex;
+                align-items: center;
+            }
+        }
+
+        &__text {
+            margin-left: 0.5rem;
+        }
+    }
+}
+
+@mixin transition-opacity-transform(
+    $opacity: 0,
+    $translateX: 0,
+    $transition: true
+) {
+    opacity: $opacity;
+    transform: translateX($translateX);
+    @if ($transition) {
+        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    }
+
+    @content;
+}
+
+@mixin is-visible($translate: translateX(0), $opacity: 0) {
+    @include vendor-rules.keyframes(is-visible) {
+        0% {
+            visibility: visible;
+            transform: $translate;
+            opacity: $opacity;
+        }
+        100% {
+            transform: translate(0);
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+}
+
+@mixin is-hidden($translate: translateX(0), $opacity: 0) {
+    @include vendor-rules.keyframes(is-hidden) {
+        0% {
+            visibility: visible;
+            transform: translate(0);
+            opacity: 1;
+        }
+        99% {
+            transform: $translate;
+            opacity: $opacity;
+            visibility: visible;
+        }
+        100% {
+            visibility: hidden;
+        }
+    }
+}

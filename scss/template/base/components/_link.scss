@@ -1,0 +1,35 @@
+$select: ".link" !default;
+
+@mixin base {
+    #{$select} {
+        position: relative;
+
+        &__advisal {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            opacity: 0;
+            transition: transform 0.6s ease-in-out, opacity 0.3s ease-in-out;
+            text-align: left;
+            transform: translateY(0);
+            min-width: 30vw;
+        }
+
+        &--is-active > &__advisal {
+            opacity: 1;
+            transform: translateY(-120%);
+            transition-delay: 0s, 0.3s;
+        }
+
+        &__container {
+            display: inline-block;
+            padding: 0.5em 0.75em;
+            background: black;
+            color: white;
+            border-radius: 0.5em;
+        }
+
+        @content;
+    }
+}

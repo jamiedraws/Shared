@@ -1,0 +1,50 @@
+$select: ".countdown" !default;
+
+// abstracts
+@use "group";
+
+@mixin base {
+    #{$select} {
+        @include render-time-by-attribute("data-days");
+        @include render-time-by-attribute("data-hours");
+        @include render-time-by-attribute("data-minutes");
+        @include render-time-by-attribute("data-seconds");
+
+        &__group {
+            display: inline-flex;
+            flex-wrap: wrap;
+            justify-content: center;
+
+            @include group.gutter(0.25em);
+        }
+
+        &--is-hidden {
+            display: none;
+        }
+
+        @content;
+    }
+}
+
+@mixin render-time-by-attribute($attribute) {
+    [#{$attribute}] {
+        &::before {
+            content: attr(#{$attribute});
+            margin-right: 0.25em;
+        }
+
+        &::after {
+            content: attr(data-time-name) "s";
+        }
+    }
+
+    [#{$attribute}="1"] {
+        &::after {
+            content: attr(data-time-name);
+        }
+    }
+
+    [#{$attribute}="0"] {
+        display: none;
+    }
+}

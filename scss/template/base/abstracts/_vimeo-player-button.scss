@@ -1,0 +1,70 @@
+$select: ".vimeo-player-button" !default;
+
+// utilities
+@use "play-pause-icons";
+
+@mixin base {
+    #{$select} {
+        position: relative;
+
+        &__play {
+            @include play-pause-icons.create;
+            pointer-events: all;
+
+            transition: 0.3s ease-in-out;
+
+            &:hover,
+            &:focus {
+                background: rgb(0, 173, 239);
+            }
+
+            &--is-hidden,
+            &[disabled] {
+                @include hide-play-state;
+            }
+        }
+
+        @content;
+    }
+}
+
+@mixin hide-play-state {
+    opacity: 0;
+    pointer-events: none;
+}
+
+@mixin hide-play-button {
+    #{$select} {
+        &__play {
+            @include hide-play-state;
+        }
+    }
+}
+
+@mixin show-play-state {
+    opacity: 1;
+    pointer-events: all;
+}
+
+@mixin show-play-button {
+    #{$select} {
+        &__play {
+            @include show-play-state;
+        }
+    }
+}
+
+@mixin fullscreen {
+    #{$select} {
+        &--fullscreen {
+            #{$select} {
+                &__play {
+                    position: sticky;
+                    bottom: 0;
+                }
+            }
+
+            @content;
+        }
+    }
+}

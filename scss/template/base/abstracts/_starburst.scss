@@ -1,0 +1,69 @@
+$select: ".starburst" !default;
+
+// abstracts
+@use "position";
+
+%inherit-shape {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: inherit;
+}
+
+%overlap {
+    @include position.center-absolute;
+}
+
+@mixin base {
+    #{$select} {
+        font-size: 2em;
+        line-height: 1;
+        text-align: center;
+
+        width: 2.5em;
+        height: 2.5em;
+
+        position: relative;
+        z-index: 1;
+
+        &__shape {
+            background: currentColor;
+
+            &,
+            &::before,
+            &::after {
+                @extend %inherit-shape;
+            }
+
+            &::before,
+            &::after {
+                content: "";
+
+                @extend %overlap;
+            }
+
+            transform: rotate(-45deg);
+
+            &::before {
+                transform: rotate(30deg);
+            }
+
+            &::after {
+                transform: rotate(-30deg);
+            }
+        }
+
+        &__text {
+            @extend %overlap;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 60%;
+            color: white;
+        }
+
+        @content;
+    }
+}

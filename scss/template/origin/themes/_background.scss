@@ -1,0 +1,84 @@
+$select: ".bg" !default;
+
+@mixin contain {
+    picture,
+    [data-src-img],
+    [data-src-iframe] {
+        @content;
+    }
+}
+
+@mixin highlighter($background-color: black, $text-color: white) {
+    &::selection,
+    ::selection {
+        background: $text-color;
+        color: $background-color;
+    }
+
+    a:focus,
+    button:focus,
+    [tabindex="0"]:focus {
+        outline-color: $text-color;
+    }
+}
+
+@mixin new {
+    #{$select} {
+        @content;
+    }
+}
+
+@mixin color-map($background-color: black, $text-color: white) {
+    background: $background-color;
+    color: $text-color;
+
+    @include highlighter($background-color, $text-color);
+
+    @content;
+}
+
+@mixin name-color-map(
+    $namespace: "first",
+    $background-color: black,
+    $text-color: white
+) {
+    #{$select} {
+        &--#{$namespace} {
+            @include color-map($background-color, $text-color);
+
+            @content;
+        }
+    }
+}
+
+@mixin image {
+    #{$select} {
+        &--image {
+            position: relative;
+
+            #{$select} {
+                &__image {
+                    position: absolute;
+                    top: 0;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    margin: auto;
+                    z-index: 0;
+
+                    img {
+                        width: 100%;
+                        height: auto;
+
+                        @supports (object-fit: cover) {
+                            height: 100%;
+                            object-fit: cover;
+                        }
+                    }
+                }
+            }
+
+            @content;
+        }
+    }
+}

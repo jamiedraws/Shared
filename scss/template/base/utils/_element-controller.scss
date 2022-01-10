@@ -1,0 +1,29 @@
+$select: ".element-controller" !default;
+
+$controller: "[data-element-controller-name]";
+
+@mixin base {
+    #{$select} {
+        @content;
+    }
+}
+
+@mixin inactive-element {
+    #{$select} {
+        &__element {
+            &:not(#{$controller}) {
+                @content;
+            }
+        }
+    }
+}
+
+@mixin active-element {
+    #{$select} {
+        &__element {
+            &#{$controller} {
+                @content;
+            }
+        }
+    }
+}

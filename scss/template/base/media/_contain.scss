@@ -1,0 +1,26 @@
+@use "sass:math";
+@use "../../origin/utils/arp";
+
+$select: ".contain" !default;
+
+@mixin new {
+    #{$select} {
+        @include format;
+        @content;
+    }
+}
+
+@mixin format {
+    @include arp.container;
+    @include arp.pseudo;
+
+    @content;
+}
+
+@mixin ratio($ratio: math.div(1, 1)) {
+    &::before {
+        @include arp.ratio($ratio);
+    }
+
+    @content;
+}

@@ -1,0 +1,73 @@
+@use "../utils/tailspin";
+@use "../utils/center-absolute";
+
+$select: ".modal" !default;
+$color: black !default;
+$background-color: rgba(255, 255, 255, 0.7) !default;
+
+@mixin new {
+    @include tailspin.css-tailspin;
+
+    #{$select} {
+        background: $background-color;
+        text-align: center;
+        color: $color;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        @include center-absolute.center-absolute("fixed");
+        z-index: 100;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+        will-change: opacity;
+        
+        &__load-state {
+            font-size: 3rem;
+            @include tailspin.svg-tailspin(
+                (
+                    stroke: $color,
+                    fill: $color
+                )
+            );
+        }
+
+        &__text {
+            font-size: 1.5em;
+        }
+
+        &__button {
+            background: #{$color};
+            color: #{$background-color};
+            padding: .5em 1.5em;
+            margin-top: 1em;
+            font: inherit;
+            border: .3em solid transparent;
+            transition: background .2s ease-in-out, border-color .2s ease-in-out;
+
+            &:hover,
+            &:focus {
+                background: #{$background-color};
+                color: #{$color};
+                border-color: #{$color};
+            }
+        }
+
+        &--is-ready {
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+            will-change: opacity;
+        }
+
+        &--is-visible {
+            pointer-events: all;
+            opacity: 1;
+        }
+
+        &--is-visible #{$select}__load-state {
+            animation-play-state: running;
+        }
+
+        @content;
+    }
+}

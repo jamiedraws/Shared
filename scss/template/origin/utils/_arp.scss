@@ -1,0 +1,224 @@
+@use "sass:meta";
+@use "extend";
+@use "center-absolute";
+@use "vendor-rules";
+@use "tailspin";
+
+@mixin container {
+    display: block;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    min-height: 1px;
+    min-width: 1px;
+    overflow: hidden;
+}
+
+@mixin fill {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+}
+
+@mixin pseudo($fill: true) {
+    &::before,
+    &::after {
+        content: "";
+    }
+
+    &::before {
+        display: block;
+    }
+
+    &::after {
+        @include center-absolute.center-absolute;
+        z-index: -1;
+    }
+
+    @if $fill {
+        & > img,
+        & > iframe,
+        & > noscript,
+        & > svg {
+            @include fill;
+        }
+    }
+}
+
+@mixin loader {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 0;
+    height: 0;
+    background: #716c6c;
+    padding: 3%;
+    border-radius: 100%;
+
+    will-change: transform;
+    transform-origin: center center;
+    transform: translate3d(0, 0, 0);
+    @include vendor-rules.vendor-rule(
+        animation,
+        apSwing 1s cubic-bezier(0, 1, 0.78, 1) infinite
+    );
+    @include vendor-rules.vendor-rule(animation-play-state, paused);
+}
+
+@mixin animation {
+    @include vendor-rules.keyframes(apSwing) {
+        0%,
+        100% {
+            transform: translateX(-100%);
+        }
+        50% {
+            transform: translateX(100%);
+        }
+    }
+}
+
+@mixin ratio($ratio) {
+    padding-bottom: calc(100% / (#{$ratio}));
+}
+
+@mixin apply($select, $ratio, $max-width: false) {
+    #{$select}::before {
+        @include ratio($ratio);
+    }
+
+    #{$select} {
+        @if meta.type-of($max-width) ==
+            "string" or
+            meta.type-of($max-width) ==
+            "number"
+        {
+            max-width: $max-width;
+            flex-basis: $max-width;
+        }
+        @include container;
+        @include pseudo;
+
+        @content;
+    }
+}
+
+@mixin init($conf: ()) {
+    $conf: extend.extend(
+        (
+            select: '[style^="--arp"]',
+            ratio: "arp",
+            max-width: "arp-max",
+            background: transparent,
+            use-default-loader: true
+        ),
+        $conf
+    );
+
+    $select: map-get($conf, select);
+    $ratio: map-get($conf, ratio);
+    $max-width: map-get($conf, max-width);
+    $use-default-loader: map-get($conf, use-default-loader);
+
+    @if type-of($max-width) == "string" {
+        $max-width: var(--#{$max-width});
+    }
+
+    #{$select} {
+        background: #{map-get($conf, background)};
+    }
+
+    .#{$ratio} {
+        &--clear {
+            background: transparent;
+        }
+    }
+
+    @if type-of($ratio) == "string" {
+        $ratio: var(--#{$ratio});
+        @supports (--custom: property) {
+            @include apply($select, $ratio, $max-width);
+        }
+    } @else {
+        @include apply($select, $ratio, $max-width);
+    }
+}
+
+@mixin defer($conf: ()) {
+    $conf: extend.extend(
+        (
+            select: '[style^="--arp"]',
+            ratio: "arp",
+            max-width: "arp-max",
+            background: hsla(0, 0%, 89%, 0.85),
+            color: #716c6c,
+            use-default-loader: true,
+            load-item: ".load-item"
+        ),
+        $conf
+    );
+
+    @include tailspin.css-tailspin;
+    @include tailspin.css-cross;
+
+    $select: map-get($conf, select);
+    $ratio: map-get($conf, ratio);
+    $max-width: map-get($conf, max-width);
+    $use-default-loader: map-get($conf, use-default-loader);
+    $load-item: map-get($conf, load-item);
+
+    #{$select}::after {
+        @if $use-default-loader {
+            @include tailspin.svg-tailspin(
+                (
+                    stroke: map-get($conf, color),
+                    fill: map-get($conf, color)
+                )
+            );
+        }
+        @content;
+    }
+
+    @include load-item($load-item);
+}
+
+@mixin load-item($select: ".load-item") {
+    #{$select} {
+        &::after {
+            @include vendor-rules.vendor-rule(animation-play-state, running);
+        }
+
+        &--success::after {
+            display: none;
+        }
+
+        & &__progress {
+            opacity: 0;
+            -webkit-transition: opacity 250ms ease-in-out;
+            transition: opacity 250ms ease-in-out;
+        }
+
+        & &__success {
+            opacity: 1;
+            -webkit-transition: opacity 250ms ease-in-out;
+            transition: opacity 250ms ease-in-out;
+        }
+
+        @media (prefers-reduced-motion) {
+            & &__progress,
+            & &__success {
+                transition: none;
+            }
+        }
+
+        &--failure::after {
+            @include tailspin.svg-cross;
+        }
+    }
+
+    @content;
+}

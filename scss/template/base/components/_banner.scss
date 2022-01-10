@@ -1,0 +1,21 @@
+$select: ".banner" !default;
+$color: black !default;
+
+// components
+@use "../../origin/components/banner";
+
+@mixin base {
+    @include banner.model($selector: $select, $color: $color);
+
+    #{$select} {
+        @content;
+    }
+}
+
+@mixin make-into-section {
+    display: block;
+    flex: 1 1 100%;
+
+    margin: 0;
+    padding: 1em;
+}

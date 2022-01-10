@@ -1,0 +1,125 @@
+$select: ".view" !default;
+$breakpoint: 1000px !default;
+
+@use "../utils/defer";
+
+@mixin new {
+    @include set-anchor-position();
+
+    #{$select} {
+        position: relative;
+
+        &__anchor {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+
+        &__in {
+            position: relative;
+        }
+
+        &__scroll {
+            position: sticky;
+        }
+
+        @content;
+    }
+}
+
+@mixin set-anchor-position($static-amount: 6rem, $dynamic-amount: 6rem) {
+    #{$select} {
+        &__anchor {
+            @supports (position: sticky) {
+                top: -$static-amount;
+            }
+
+            @media all and (max-width: $breakpoint) {
+                top: -$dynamic-amount;
+            }
+        }
+
+        &__scroll {
+            @supports (position: sticky) {
+                top: $static-amount;
+            }
+
+            @media all and (max-width: $breakpoint) {
+                top: $dynamic-amount;
+            }
+        }
+    }
+
+    @include defer.set-offset($static-amount);
+
+    @media all and (max-width: $breakpoint) {
+        @include defer.set-offset($dynamic-amount);
+    }
+}
+
+@mixin zero-anchor-position($parent-select: $select) {
+    #{$parent-select} {
+        & > #{$select}__anchor {
+            top: 0;
+        }
+
+        #{$select}__scroll {
+            top: 0;
+        }
+
+        @content;
+    }
+}
+
+@mixin set-position-context(
+    $parent-select: $select,
+    $static-amount: 6rem,
+    $dynamic-amount: $static-amount
+) {
+    #{$parent-select} {
+        margin-top: -#{$static-amount};
+
+        @media all and (max-width: $breakpoint) {
+            margin-top: -#{$dynamic-amount};
+        }
+
+        #{$select} {
+            &__offset {
+                padding-top: $static-amount;
+
+                @media all and (max-width: $breakpoint) {
+                    padding-top: $dynamic-amount;
+                }
+            }
+
+            &__flow {
+                padding-top: $static-amount;
+                margin-bottom: -#{$static-amount};
+
+                @media all and (max-width: $breakpoint) {
+                    padding-top: $dynamic-amount;
+                    margin-bottom: -#{$dynamic-amount};
+                }
+            }
+        }
+
+        @content;
+    }
+}
+
+@mixin scrolling-content {
+    #{$select} {
+        &--scrolling-content {
+            #{$select} {
+                &__anchor {
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                }
+            }
+
+            @content;
+        }
+    }
+}

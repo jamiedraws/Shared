@@ -1,0 +1,59 @@
+$select: ".accordion" !default;
+
+%inactive-outline {
+    outline: none;
+}
+
+%active-outline {
+    outline-color: Highlight;
+    outline-color: -webkit-focus-ring-color;
+    outline-style: auto;
+}
+
+@mixin base {
+    #{$select} {
+        @extend %inactive-outline;
+
+        &__header {
+            margin: 0;
+        }
+
+        &__button {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            border: none;
+            font: inherit;
+            margin: 0;
+            padding: 0;
+
+            @extend %inactive-outline;
+
+            &[aria-expanded="true"] {
+                &:focus {
+                    @extend %active-outline;
+                }
+            }
+
+            &:focus {
+                @extend %active-outline;
+            }
+        }
+
+        &__section {
+            &[hidden] {
+                display: none;
+            }
+        }
+
+        &__content {
+        }
+
+        &--is-focused,
+        &:focus-within {
+            @extend %active-outline;
+        }
+
+        @content;
+    }
+}

@@ -1,0 +1,14 @@
+// utils
+@use "../utils/unit-conversion" as convert;
+
+@function set($pixel) {
+    @return convert.to-rem($pixel, $media: true);
+}
+
+@function em($pixel) {
+    @return convert.to-em($pixel);
+}
+
+@function rem($pixel) {
+    @return convert.to-rem($pixel);
+}

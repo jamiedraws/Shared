@@ -1,0 +1,32 @@
+$select: ".divider-line" !default;
+
+@mixin new {
+    #{$select} {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 1rem;
+
+        &::before,
+        &::after {
+            content: "";
+            flex: 1;
+            padding: 0.5px;
+            background: currentColor;
+            align-self: center;
+            margin: 0;
+        }
+
+        @content;
+    }
+}
+
+@mixin column {
+    flex: 0;
+    flex-direction: column;
+}
+
+@mixin row {
+    flex: 1 1 100%;
+    flex-direction: row;
+}

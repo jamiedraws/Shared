@@ -1,0 +1,34 @@
+@use "strip-unit";
+@use "sass:color";
+
+@function encode-percent($color) {
+    @return unquote("#{strip-unit.strip-unit($color)}%25");
+}
+
+@function get-rgba($color, $alpha: 1, $encode: false) {
+    $r: red($color);
+    $g: green($color);
+    $b: blue($color);
+
+    @if $encode {
+        $r: encode-percent($r);
+        $g: encode-percent($g);
+        $b: encode-percent($b);
+    }
+
+    @return unquote("rgba(#{$r}, #{$g}, #{$b}, #{$alpha})");
+}
+
+@function get-hsla($color, $alpha: 1, $encode: false) {
+    $h: hue($color);
+    $s: saturation($color);
+    $l: lightness($color);
+
+    @if $encode {
+        $h: strip-unit.strip-unit($h);
+        $s: encode-percent($s);
+        $l: encode-percent($l);
+    }
+
+    @return unquote("hsla(#{$h}, #{$s}, #{$l}, #{$alpha})");
+} ;

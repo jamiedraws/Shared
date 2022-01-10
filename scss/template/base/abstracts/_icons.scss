@@ -1,0 +1,44 @@
+$select: ".icon" !default;
+
+@mixin new {
+    .svg-symbols {
+        display: none;
+    }
+
+    #{$select} {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        stroke: currentColor;
+        fill: none;
+        pointer-events: none;
+        fill-rule: evenodd;
+        clip-rule: evenodd;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-miterlimit: 3;
+
+        @content;
+    }
+}
+
+@mixin star {
+    #{$select} {
+        &--star {
+            fill: currentColor;
+            stroke: none;
+
+            @content;
+        }
+    }
+}
+
+@mixin combobox {
+    #{$select} {
+        &--combobox {
+            transform: rotate(0.75turn);
+
+            @content;
+        }
+    }
+}

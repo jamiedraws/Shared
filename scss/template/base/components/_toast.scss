@@ -1,0 +1,259 @@
+@use "sass:map";
+@use "close";
+
+$select: ".toast" !default;
+
+$colors: (
+    background-valid: #ebf9eb,
+    background-invalid: #ffebeb,
+    text-valid: #025002,
+    text-invalid: #860000
+) !default;
+
+$mq: (
+    container: 600px
+) !default;
+
+@mixin new {
+    @include close.new($select);
+
+    #{$select} {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 0;
+
+        [hidden] {
+            display: none;
+        }
+
+        &__stage {
+            text-align: left;
+            background: white;
+            color: black;
+            padding: 2rem;
+            transform: translateY(0);
+            pointer-events: all;
+
+            @media all and (min-width: map.get($mq, container)) {
+                margin: 1rem;
+            }
+        }
+
+        &--is-ready &__stage {
+            transition: transform 0.5s cubic-bezier(0.04, 0.64, 0.2, 1),
+                opacity 0.3s ease-in-out, background-color 0.3s ease-in-out;
+        }
+
+        &--hidden {
+            #{$select} {
+                &__close {
+                    &::before {
+                        transition-delay: 0.35s;
+                    }
+
+                    &::after {
+                        transition-delay: 0.7s;
+                    }
+                }
+
+                &__stage {
+                    transition-delay: 1s;
+                    transform: translateY(100%);
+                    opacity: 0;
+                    pointer-events: none;
+                }
+            }
+        }
+
+        &--alert {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 6;
+            pointer-events: none;
+
+            #{$select} {
+                &__stage {
+                    box-shadow: 0 0 1.25em rgba(0, 0, 0, 0.35);
+                }
+            }
+        }
+
+        &--active {
+            z-index: 7;
+        }
+
+        &__text {
+            flex: 0 1 auto;
+            text-align: center;
+        }
+
+        &__group {
+            margin: -1rem;
+            overflow: hidden;
+
+            > * {
+                margin: 1rem;
+            }
+        }
+
+        &__close {
+            font-size: 0.35em;
+            cursor: pointer;
+            position: relative;
+            z-index: 2;
+
+            &::before {
+                transition-delay: 0.35s;
+            }
+
+            &::after {
+                transition-delay: 0.7s;
+            }
+        }
+
+        @content;
+    }
+}
+
+@mixin theme-state {
+    #{$select} {
+        &[data-state="valid"] > &__stage {
+            background: map.get($colors, background-valid);
+            color: map.get($colors, text-valid);
+        }
+
+        &[data-state="invalid"] > &__stage {
+            background: map.get($colors, background-invalid);
+            color: map.get($colors, text-invalid);
+        }
+    }
+}
+
+@mixin polite {
+    #{$select} {
+        &--polite {
+            align-items: flex-end;
+            bottom: 2rem;
+
+            @content;
+        }
+    }
+}
+
+@mixin promote {
+    #{$select} {
+        &--promote {
+            justify-content: flex-start;
+            align-items: flex-end;
+
+            #{$select} {
+                &__button {
+                    font-size: 1em;
+                }
+            }
+        }
+
+        @content;
+    }
+}
+
+@mixin fixate-to-bottom-and-span {
+    #{$select} {
+        &--fixate-to-bottom-and-span {
+            align-items: flex-end;
+            bottom: 0;
+            left: 0;
+            right: 0;
+
+            #{$select} {
+                &__stage {
+                    margin: 0;
+                    flex: 1 1 100%;
+                }
+            }
+
+            @content;
+        }
+    }
+}
+
+@mixin modal {
+    #{$select} {
+        &--modal {
+            #{$select} {
+                &__close {
+                    float: right;
+                }
+
+                &__stage {
+                    overflow: auto;
+                    max-height: 100vh;
+                }
+            }
+        }
+
+        @content;
+    }
+}
+
+@mixin nojs {
+    #{$select} {
+        &--nojs {
+            position: relative;
+            z-index: 1;
+
+            #{$select} {
+                &__stage {
+                    pointer-events: all;
+                    opacity: 1;
+                    transform: translate(0);
+                    box-shadow: none;
+                    margin: 0;
+                    max-height: none;
+                    overflow: visible;
+                }
+
+                &__close {
+                    display: none;
+                }
+            }
+        }
+
+        @content;
+    }
+}
+
+@mixin model {
+    @include layer;
+    @include stage;
+}
+
+@mixin layer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    top: 0;
+    right: 0;
+    z-index: 10;
+}
+
+@mixin stage {
+    text-align: left;
+    background: white;
+    color: black;
+    padding: 1em;
+    box-shadow: 0 0 1.25em rgba(0, 0, 0, 0.35);
+    transform: translateY(0);
+    transition: transform 0.5s cubic-bezier(0.04, 0.64, 0.2, 1),
+        opacity 0.3s ease-in-out;
+}
+
+@mixin hidden {
+    transform: translateY(100%);
+    opacity: 0;
+}

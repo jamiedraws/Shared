@@ -1,0 +1,140 @@
+@mixin base {
+    *,
+    ::before,
+    ::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    html,
+    body {
+        width: 100%;
+        height: auto;
+    }
+
+    html {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+
+        -webkit-text-size-adjust: 100%;
+        -moz-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+    }
+
+    body {
+        margin: 0;
+        overflow-x: hidden;
+
+        @supports (display: flex) {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        > footer {
+            flex: 1;
+        }
+    }
+
+    main {
+        display: block;
+        flex: 1;
+    }
+
+    a:focus,
+    button:focus,
+    label:focus {
+        outline: 2px solid currentColor;
+    }
+
+    :link,
+    :visited {
+        text-decoration: underline;
+        color: inherit;
+        word-break: break-word;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        word-break: break-word;
+    }
+
+    ul,
+    ol {
+        margin-left: 1.5rem;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    img,
+    iframe,
+    picture,
+    figure {
+        display: block;
+    }
+
+    iframe,
+    img {
+        border: 0;
+    }
+
+    figure {
+        margin: 0;
+    }
+
+    small {
+        font-size: 80%;
+    }
+
+    sup,
+    sub {
+        font-size: 50%;
+        line-height: 0;
+        position: relative;
+        margin: 0 0.25em;
+    }
+
+    sup {
+        bottom: 0.33em;
+    }
+
+    sub {
+        bottom: -0.33em;
+    }
+
+    button,
+    input,
+    select {
+        background: none;
+        border: 0;
+        font-size: 16px;
+        border-radius: 0;
+        box-shadow: none;
+        word-break: break-all;
+        text-overflow: ellipsis;
+
+        &:not([type="checkbox"]):not([type="radio"]) {
+            -webkit-appearance: none;
+            appearance: none;
+        }
+    }
+
+    button,
+    select {
+        cursor: pointer;
+    }
+}

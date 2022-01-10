@@ -1,0 +1,21 @@
+$select: ".stars" !default;
+
+// abstracts
+@use "group";
+
+@mixin base {
+    #{$select} {
+        &__group {
+            @include group.contain;
+            justify-content: center;
+        }
+
+        &__icon {
+            width: 1em;
+            height: 1em;
+            fill: currentColor;
+        }
+
+        @content;
+    }
+}

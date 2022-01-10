@@ -1,0 +1,44 @@
+$select: ".vimeo-poster-player" !default;
+
+$-vimeo-src: "https://player.vimeo.com/video/";
+
+%set-inert {
+    opacity: 0;
+    pointer-events: none;
+}
+
+%set-transition {
+    transition: opacity 0.3s ease-in-out;
+}
+
+@mixin base {
+    #{$select} {
+        @include iframe {
+            @extend %set-transition;
+        }
+
+        img {
+            @extend %set-transition;
+        }
+
+        &:not(&--is-ready) {
+            @include iframe {
+                @extend %set-inert;
+            }
+        }
+
+        &--is-ready {
+            img {
+                @extend %set-inert;
+            }
+        }
+
+        @content;
+    }
+}
+
+@mixin iframe {
+    iframe[src^="#{$-vimeo-src}"] {
+        @content;
+    }
+}

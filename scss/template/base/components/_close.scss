@@ -1,0 +1,61 @@
+$select: ".close" !default;
+$hidden-namespace: "hidden" !default;
+
+@mixin new($select: $select, $hidden-namespace: $hidden-namespace) {
+    $rotateZ: 45deg;
+    $scaleY: 1.35;
+
+    #{$select} {
+        &__close {
+            $transition-delay: 0.35;
+
+            flex: 0 0 auto;
+            width: 3em;
+            height: 3em;
+            display: block;
+            border: none;
+
+            background: none;
+            position: relative;
+
+            &::before,
+            &::after {
+                content: "";
+                width: 0.2em;
+                height: inherit;
+                background: currentColor;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                top: 0;
+                transition: transform 300ms ease-out #{$transition-delay}s;
+            }
+
+            &::before {
+                transform-origin: top right;
+                transform: rotateZ(-$rotateZ) scaleY($scaleY);
+                right: auto;
+            }
+
+            &::after {
+                transform-origin: top left;
+                transform: rotateZ($rotateZ) scaleY($scaleY);
+                transition-delay: #{$transition-delay + 0.35}s;
+                left: auto;
+            }
+        }
+
+        &--#{$hidden-namespace} &__close {
+            &::before {
+                transform: rotateZ(-$rotateZ) scaleY(0);
+            }
+
+            &::after {
+                transform: rotateZ($rotateZ) scaleY(0);
+            }
+        }
+
+        @content;
+    }
+}

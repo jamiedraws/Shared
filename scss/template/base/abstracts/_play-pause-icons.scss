@@ -1,0 +1,66 @@
+@mixin get-play-icon($color: white) {
+    background: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' preserveAspectRatio='xMidYMid' focusable='false'%3E%3Cpolygon fill='#{$color}' points='1,0 20,10 1,20'%3E%3C/polygon%3E%3C/svg%3E")
+        no-repeat;
+}
+
+@mixin get-pause-icon($color: white) {
+    background: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' preserveAspectRatio='xMidYMid' focusable='false'%3E%3Crect fill='#{$color}' width='6' height='20' x='0' y='0'%3E%3C/rect%3E%3Crect fill='#{$color}' width='6' height='20' x='12' y='0'%3E%3C/rect%3E%3C/svg%3E")
+        no-repeat;
+}
+
+@mixin create {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    pointer-events: none;
+    width: 4em;
+    height: 4em;
+    margin: auto;
+    border: 3px solid white;
+    border-radius: 100%;
+    padding: 2.5em;
+    transform: scale(0.5);
+    background: rgba(23, 35, 34, 0.75);
+    transition: background 0.3s ease-in-out, transform 0.3s ease-in-out;
+    font-size: 0.75em;
+    overflow: hidden;
+
+    &::before,
+    &::after {
+        content: "";
+        width: 2em;
+        height: 2em;
+        margin: auto;
+
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    }
+
+    &::before {
+        @include get-play-icon();
+    }
+
+    &::after {
+        opacity: 0;
+        transform: translateY(100%);
+        @include get-pause-icon();
+    }
+
+    &--is-playing::before {
+        opacity: 0;
+    }
+
+    &--is-playing::after {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    @content;
+}

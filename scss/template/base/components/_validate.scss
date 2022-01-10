@@ -1,0 +1,183 @@
+@use "sass:map";
+
+$select: ".message" !default;
+
+$colors: () !default;
+
+$colors: map.merge(
+    (
+        valid: green,
+        invalid: #c00
+    ),
+    $colors
+);
+
+$attribute: [data-required] !default;
+$font-size: 1.5rem !default;
+$vertical-offset: 150% !default;
+
+$separator: "/" !default;
+
+@mixin new {
+    #{$select} {
+        &__group {
+            #{$select} {
+                &__label {
+                    display: inline-block;
+                }
+
+                &__valid,
+                &__invalid {
+                    display: none;
+                    font-size: #{$font-size};
+
+                    &::before {
+                        @if $separator != "" {
+                            content: $separator;
+                            margin-right: 0.5rem;
+                        }
+                    }
+                }
+            }
+        }
+
+        #{$attribute}:not(:placeholder-shown) {
+            &:valid {
+                @include is-valid();
+            }
+
+            &:invalid {
+                @include is-invalid();
+            }
+        }
+
+        &__is-valid {
+            @include is-valid();
+        }
+
+        &__is-invalid {
+            & {
+                @include is-invalid();
+            }
+
+            &#{$attribute}:not(:placeholder-shown):valid {
+                @include is-invalid();
+            }
+        }
+
+        @content;
+    }
+}
+
+@mixin use-label-motion {
+    #{$select} {
+        &--use-label-motion {
+            #{$attribute} {
+                &:placeholder-shown ~ #{$select}__label {
+                    transform: translateY($vertical-offset);
+                }
+
+                &:focus ~ #{$select}__label {
+                    transform: translateY(50%);
+                }
+            }
+
+            #{$select} {
+                &__label {
+                    transform: translateY(50%);
+                    transition: transform 0.2s ease-in-out;
+                }
+            }
+
+            @content;
+        }
+    }
+}
+
+@mixin is-valid {
+    outline-color: map.get($colors, valid);
+    border-color: map.get($colors, valid);
+
+    & ~ #{$select}__group {
+        color: map.get($colors, valid);
+
+        #{$select} {
+            &__valid {
+                display: inline-block;
+            }
+
+            &__invalid {
+                display: none;
+            }
+        }
+    }
+}
+
+@mixin is-invalid {
+    outline-color: map.get($colors, invalid);
+    border-color: map.get($colors, invalid);
+
+    & ~ #{$select}__group {
+        color: map.get($colors, invalid);
+
+        #{$select} {
+            &__invalid {
+                display: inline-block;
+            }
+
+            &__valid {
+                display: none;
+            }
+        }
+    }
+}
+
+@mixin is-valid-select {
+    #{$select} {
+        &__is-valid-select {
+            outline-color: map.get($colors, valid);
+            border-color: map.get($colors, valid);
+
+            > #{$select} {
+                &__group {
+                    color: map.get($colors, valid);
+
+                    #{$select} {
+                        &__valid {
+                            display: inline-block;
+                        }
+
+                        &__invalid {
+                            display: none;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@mixin is-invalid-select {
+    #{$select} {
+        &__is-invalid-select {
+            outline-color: map.get($colors, invalid);
+            border-color: map.get($colors, invalid);
+
+            > #{$select} {
+                &__group {
+                    color: map.get($colors, invalid);
+
+                    #{$select} {
+                        &__invalid {
+                            display: inline-block;
+                        }
+
+                        &__valid {
+                            display: none;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

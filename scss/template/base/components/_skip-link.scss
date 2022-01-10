@@ -1,0 +1,71 @@
+$select: ".skip-link" !default;
+
+@mixin new {
+    #{$select} {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+        pointer-events: none;
+
+        &__button {
+            display: inline-block;
+            padding: 1em;
+            margin: 1rem;
+            text-align: center;
+            background: black;
+            color: white;
+            font-weight: bold;
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            transform: translateY(-50%);
+            opacity: 0;
+            pointer-events: none;
+            position: relative;
+
+            > span {
+                position: relative;
+                z-index: 1;
+            }
+
+            &:visited {
+                color: white;
+            }
+
+            &::before,
+            &::after {
+                position: absolute;
+                content: "";
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+            }
+
+            &::before {
+                background: black;
+            }
+
+            &::after {
+                background: white;
+                transition: opacity 0.3s ease-in-out;
+                opacity: 0;
+            }
+
+            &:focus {
+                pointer-events: all;
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            &:hover {
+                color: black;
+
+                &::after {
+                    opacity: 1;
+                }
+            }
+        }
+
+        @content;
+    }
+}
