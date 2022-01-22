@@ -3,7 +3,7 @@ $breakpoint: 1000px !default;
 
 @use "../utils/defer";
 
-@mixin new {
+@mixin base {
     @include set-anchor-position();
 
     #{$select} {

@@ -21,11 +21,16 @@ $select: ".accordion" !default;
         &__button {
             -webkit-appearance: none;
             appearance: none;
+
             background: transparent;
             border: none;
-            font: inherit;
             margin: 0;
             padding: 0;
+            display: block;
+            width: 100%;
+
+            font: inherit;
+            text-align: left;
 
             @extend %inactive-outline;
 
