@@ -1,20 +1,20 @@
-import { elementExists } from "./html";
+import { elementExists } from "Shared/ts/utils/html";
 
 export default class ElementController {
     /**
      * Represents the root that will contain all elements and controllers as descedent elements
      */
-    public root: Element;
+    public root: Element | null;
 
     /**
      * Represents an array of controller elements where each controller is responsible for managing the state of the elements through the `aria-controls` attribute
      */
-    public controllers: Element[];
+    public controllers: Element[] = [];
 
     /**
      * Represents an array of elements where each element can be controlled by a controller element through the `id` attribute
      */
-    public elements: Element[];
+    public elements: (Element | undefined | null)[];
 
     /**
      * Enables the ability for controller elements that are equipped with the `aria-controls` attribute to control the state of other elements by a reference to it's `id` attribute.
@@ -23,9 +23,11 @@ export default class ElementController {
     constructor(root?: Element) {
         this.root = root ?? document.querySelector(".element-controller");
 
-        this.controllers = Array.from(
-            this.root.querySelectorAll("[aria-controls]")
-        );
+        if (this.root) {
+            this.controllers = Array.from(
+                this.root.querySelectorAll("[aria-controls]")
+            );
+        }
 
         this.elements = [];
 
@@ -47,7 +49,7 @@ export default class ElementController {
     private static setElementsByContext(context: ElementController) {
         context.controllers.forEach((controller) => {
             const elements = this.getContainersByControllerIds(
-                this.getIdsByController(controller),
+                context.getIdsByController(controller),
                 controller,
                 context
             );
@@ -65,8 +67,8 @@ export default class ElementController {
      * @param controller Element
      * @returns string[]
      */
-    private static getIdsByController(controller: Element): string[] {
-        return controller.getAttribute("aria-controls").split(" ");
+    public getIdsByController(controller: Element): string[] {
+        return (controller.getAttribute("aria-controls") ?? "").split(" ");
     }
 
     /**
@@ -80,13 +82,13 @@ export default class ElementController {
         ids: string[],
         controller: Element,
         context: ElementController
-    ): Element[] {
+    ): (Element | undefined | null)[] {
         return Array.from(ids, (id) => {
             const element =
                 context.getElementById(id) ??
-                context.root.querySelector(`#${id}`);
+                context.root?.querySelector(`#${id}`);
 
-            if (!elementExists(element)) {
+            if (!element) {
                 console.error({
                     message: `The element id, ${id}, referenced within the current controller could not be found in the document.`,
                     controller
@@ -111,14 +113,14 @@ export default class ElementController {
      * @param controller Element
      */
     public addStateToElementsByController(controller: Element): void {
-        const ids = ElementController.getIdsByController(controller);
+        const ids = this.getIdsByController(controller);
 
         const elements = this.elements.filter((element) =>
-            ids.includes(element.id)
+            ids.includes(element?.id ?? "")
         );
 
         elements.forEach((element) =>
-            element.setAttribute("data-element-controller-name", controller.id)
+            element?.setAttribute("data-element-controller-name", controller.id)
         );
     }
 
@@ -127,14 +129,14 @@ export default class ElementController {
      * @param controller Element
      */
     public removeStateFromElementsByController(controller: Element): void {
-        const ids = ElementController.getIdsByController(controller);
+        const ids = this.getIdsByController(controller);
 
         const elements = this.elements.filter(
-            (element) => !ids.includes(element.id)
+            (element) => !ids.includes(element?.id ?? "")
         );
 
         elements.forEach((element) =>
-            element.removeAttribute("data-element-controller-name")
+            element?.removeAttribute("data-element-controller-name")
         );
     }
 
@@ -143,7 +145,7 @@ export default class ElementController {
      * @param id string
      * @returns Element
      */
-    public getElementById(id: string): Element {
-        return this.elements.find((element) => element.id === id);
+    public getElementById(id: string): Element | undefined | null {
+        return this.elements.find((element) => element?.id === id);
     }
 }

@@ -1,30 +1,33 @@
-import { elementExists, enumerateElements } from "shared/ts/utils/html";
+import { elementExists, enumerateElements } from "Shared/ts/utils/html";
 
 export default class FocusManager {
     /**
      * Represents the internal root WeakMap interface that communicates with the public root accessor.
      */
-    protected static root: WeakMap<FocusManager, HTMLElement> = new WeakMap();
+    protected static root: WeakMap<FocusManager, HTMLElement | null> =
+        new WeakMap();
 
     /**
      * Uses the FocusManager instance as a key to return the root HTMLElement.
      * @param key FocusManager
      * @returns HTMLElement
      */
-    protected static getRoot(key: FocusManager): HTMLElement {
+    protected static getRoot(
+        key: FocusManager
+    ): HTMLElement | undefined | null {
         return this.root.get(key);
     }
 
     /**
      * Represents all focusable elements within the root context.
      */
-    public focusElements: Element[];
+    public focusElements: Element[] = [];
 
     /**
      * Uses a root element to determine all of the focusable elements that exist within the root context. All focusable elements are returned as a new array and can be accessed. Support includes operations to enable and disable focus trap navigation.
      * @param root HTMLElement
      */
-    constructor(root: HTMLElement = document.querySelector("body")) {
+    constructor(root: HTMLElement | null = document.querySelector("body")) {
         if (!elementExists(root)) {
             throw new Error(
                 `FocusManager failed to determine if the passed element exists.`
@@ -41,11 +44,13 @@ export default class FocusManager {
     public updateElements(): void {
         const root = FocusManager.root.get(this);
 
-        this.focusElements = enumerateElements(
-            root.querySelectorAll(
-                "button, [href]:not(link):not(base), input, select, textarea, [tabindex]:not([data-root-boundary])"
-            )
-        );
+        if (root) {
+            this.focusElements = enumerateElements(
+                root.querySelectorAll(
+                    "button, [href]:not(link):not(base), input, select, textarea, [tabindex]:not([data-root-boundary])"
+                )
+            );
+        }
     }
 
     /**

@@ -1,5 +1,5 @@
-import { Counter } from "shared/ts/components/counter";
-import { observer } from "shared/ts/observers/intersection";
+import { Counter } from "Shared/ts/components/counter";
+import { observer } from "Shared/ts/observers/intersection";
 
 export default class PriceCounter {
     /**
@@ -15,7 +15,7 @@ export default class PriceCounter {
         this.attribute = attribute ?? this.attribute;
 
         observer(id, {
-            inRange: this.createCounter.bind(this)
+            inRange: (element) => this.createCounter(element)
         });
     }
 
@@ -24,15 +24,15 @@ export default class PriceCounter {
      * @param element HTMLElement
      * @returns number
      */
-    public getPriceByElement(element: HTMLElement): number {
-        return parseInt(element.getAttribute(this.attribute));
+    public getPriceByElement(element: Element): number {
+        return parseInt(element.getAttribute(this.attribute) ?? "");
     }
 
     /**
      * Takes an HTMLElement and creates a counting animation that will last 1 second.
      * @param element HTMLElement
      */
-    public createCounter(element: HTMLElement) {
+    public createCounter(element: Element) {
         const price = this.getPriceByElement(element);
 
         const counter = new Counter(0, price, {

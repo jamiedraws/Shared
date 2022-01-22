@@ -37,18 +37,19 @@ export default class MediaQuery {
 
     private static getController(
         mediaQueryList: MediaQueryList
-    ): MediaQueryController[] {
+    ): MediaQueryController[] | undefined {
         return this.controller.get(mediaQueryList);
     }
 
     private static getRepository(
         mediaQueryList: MediaQueryList
-    ): MediaQueryRepository {
+    ): MediaQueryRepository | undefined {
         return this.repository.get(mediaQueryList);
     }
 
     private static processEvents(context: MediaQuery): void {
         const repository = this.getRepository(context.mediaQueryList);
+        if (!repository) return;
 
         if (!repository.isEventsProcessed) {
             repository.isEventsProcessed = true;
@@ -79,6 +80,7 @@ export default class MediaQuery {
 
     private static observe(mediaQueryList: MediaQueryList): void {
         const controller = this.getController(mediaQueryList);
+        if (!controller) return;
 
         if (mediaQueryList.matches) {
             const response = controller.find(
@@ -101,6 +103,7 @@ export default class MediaQuery {
         context: MediaQuery
     ): void {
         const controller = this.getController(context.mediaQueryList);
+        if (!controller) return;
 
         controller.push({
             name: name,

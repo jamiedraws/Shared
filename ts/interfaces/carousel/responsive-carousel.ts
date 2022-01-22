@@ -1,5 +1,5 @@
-import ICarousel from "./carousel";
-import { ICarouselConfig } from "./carousel";
+import ICarousel from "Shared/ts/interfaces/carousel/carousel";
+import { ICarouselConfig } from "Shared/ts/interfaces/carousel/carousel";
 
 export interface IResponsiveCarouselConfig extends ICarouselConfig {
     /**

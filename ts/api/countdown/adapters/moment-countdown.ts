@@ -1,7 +1,7 @@
 import ICountdown, {
     CountdownStopTask,
     CountdownTickTask
-} from "../../../interfaces/countdown";
+} from "Shared/ts/interfaces/countdown";
 import moment, { Duration } from "moment";
 
 export default class MomentCountdown implements ICountdown {

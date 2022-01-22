@@ -1,5 +1,5 @@
-import IResponsiveCarousel from "../../../../interfaces/carousel/responsive-carousel";
-import SlideCarouselAdapter from "./slide-carousel";
+import IResponsiveCarousel from "Shared/ts/interfaces/carousel/responsive-carousel";
+import SlideCarouselAdapter from "Shared/ts/api/carousel/slide/adapters/slide-carousel";
 
 export default class ResponsiveSlideCarouselAdapter
     extends SlideCarouselAdapter

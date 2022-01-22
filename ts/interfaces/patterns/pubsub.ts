@@ -1,7 +1,7 @@
 /**
  * An object where each observable type contains an array that can be populated with the IPubSubEventTask object
  */
-export interface IPubSubEvents {}
+export interface IPubSubEvents extends Record<string, any> {}
 
 export interface IPubSubEventTask {
     /**

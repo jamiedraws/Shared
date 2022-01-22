@@ -2,27 +2,27 @@ export interface IToastHTMLTemplate {
     /**
      * Represents the element containing everything within the toast component
      */
-    container: HTMLElement;
+    container: HTMLElement | null;
     /**
      * Represents the animatable container and controls the content's visibility status
      */
-    stage: HTMLElement;
+    stage: HTMLElement | null;
     /**
      * Represents a button that can dismiss the toast component
      */
-    dismissButton: HTMLButtonElement;
+    dismissButton: HTMLButtonElement | null;
     /**
      * Represents the group containing the text container and the dismiss button
      */
-    group: HTMLElement;
+    group: HTMLElement | null;
     /**
      * Represents the element containing the text node
      */
-    textContainer: HTMLSpanElement;
+    textContainer: HTMLSpanElement | null;
     /**
      * Represents the live region container
      */
-    liveRegion: HTMLElement;
+    liveRegion: HTMLElement | null;
 }
 
 export interface IToastConfig {
@@ -44,9 +44,9 @@ export interface IToastEventManager {
     /**
      * When the stage element transitions on/off screen
      */
-    stage: EventListenerOrEventListenerObject;
+    stage: (event: TransitionEvent) => void;
     /**
      * When the dismiss button is activated
      */
-    dismissButton: EventListenerOrEventListenerObject;
+    dismissButton: (event: MouseEvent) => void;
 }

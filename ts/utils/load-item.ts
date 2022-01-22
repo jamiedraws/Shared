@@ -2,8 +2,12 @@ import {
     ILoadItemConfig,
     ILoadItemController,
     LoadItemTask
-} from "../interfaces/load-item";
-import { createElement, elementExists, setElementAttributes } from "./html";
+} from "Shared/ts/interfaces/load-item";
+import {
+    createElement,
+    elementExists,
+    setElementAttributes
+} from "Shared/ts/utils/html";
 
 export default class LoadItem {
     /**
@@ -19,7 +23,7 @@ export default class LoadItem {
     /**
      * Represents the name of the source value
      */
-    public src: string;
+    public src: string | null;
 
     /**
      * Represents the name of the loading strategy
@@ -39,7 +43,7 @@ export default class LoadItem {
     /**
      * Represents the key-value pair collection of additional HTML elements and attributes
      */
-    public tagsGroup: {};
+    public tagsGroup: { [key: string]: any };
 
     /**
      * Represents the key-value pair relationship between the LoadItem instance and the controller task array
@@ -62,8 +66,9 @@ export default class LoadItem {
         this.onerrorname = config?.onerrorname ?? "onerror";
 
         this.attributes =
-            JSON.parse(placeholder.getAttribute("data-attr")) ?? {};
-        this.tagsGroup = JSON.parse(placeholder.getAttribute("data-tag")) ?? {};
+            JSON.parse(placeholder.getAttribute("data-attr") ?? "") ?? {};
+        this.tagsGroup =
+            JSON.parse(placeholder.getAttribute("data-tag") ?? "") ?? {};
 
         if (!LoadItem.isRendered(this)) {
             LoadItem.initalize(this);
@@ -93,7 +98,9 @@ export default class LoadItem {
      * @param context LoadItem
      * @returns ILoadItemController[]
      */
-    private static getController(context: LoadItem): ILoadItemController[] {
+    private static getController(
+        context: LoadItem
+    ): ILoadItemController[] | undefined {
         return this.controller.get(context);
     }
 
@@ -106,7 +113,7 @@ export default class LoadItem {
         let element = this.getElementByPlaceholder(context);
 
         element = elementExists(element)
-            ? setElementAttributes(element, {
+            ? setElementAttributes(element as HTMLElement, {
                   src: context.src,
                   class: "load-item__progress"
               })
@@ -138,7 +145,9 @@ export default class LoadItem {
      * @param context LoadItem
      * @returns HTMLElement
      */
-    private static getElementByPlaceholder(context: LoadItem): HTMLElement {
+    private static getElementByPlaceholder(
+        context: LoadItem
+    ): HTMLElement | null {
         return context.placeholder.querySelector(context.tag);
     }
 
@@ -170,8 +179,14 @@ export default class LoadItem {
         });
 
         const controller = this.getController(context);
-        const response = controller.find((control) => control.name === "error");
-        response?.task();
+
+        if (controller) {
+            const response = controller.find(
+                (control) => control.name === "error"
+            );
+
+            response?.task();
+        }
     }
 
     /**
@@ -200,8 +215,8 @@ export default class LoadItem {
         context: LoadItem
     ): Promise<HTMLElement> {
         return new Promise<HTMLElement>((resolve, reject) => {
-            element[context.onloadname] = () => resolve(element);
-            element[context.onerrorname] = () => reject(element);
+            element.onload = () => resolve(element);
+            element.onerror = () => reject(element);
         });
     }
 
@@ -218,8 +233,14 @@ export default class LoadItem {
         element.classList.add("load-item__success");
 
         const controller = this.getController(context);
-        const response = controller.find((control) => control.name === "load");
-        response?.task();
+
+        if (controller) {
+            const response = controller.find(
+                (control) => control.name === "load"
+            );
+
+            response?.task();
+        }
     }
 
     /**
@@ -235,10 +256,12 @@ export default class LoadItem {
     ): void {
         const controller = this.getController(context);
 
-        controller.push({
-            name: name,
-            task: task
-        });
+        if (controller) {
+            controller.push({
+                name: name,
+                task: task
+            });
+        }
     }
 
     /**

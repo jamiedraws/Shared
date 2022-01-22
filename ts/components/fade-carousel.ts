@@ -1,6 +1,6 @@
-import Carousel from "shared/ts/components/carousel";
+import Carousel from "Shared/ts/components/carousel";
 import IFadeCarousel from "Shared/ts/interfaces/carousel/fade-carousel";
-import { elementExists } from "shared/ts/utils/html";
+import { elementExists } from "Shared/ts/utils/html";
 
 export default class FadeCarousel extends Carousel {
     /**
@@ -23,6 +23,8 @@ export default class FadeCarousel extends Carousel {
      * @param context IFadeCarousel
      */
     private static initialize(context: IFadeCarousel): void {
+        if (context.children === undefined) return;
+
         context.initialize();
 
         FadeCarousel.createWatch(context);
@@ -38,6 +40,8 @@ export default class FadeCarousel extends Carousel {
         const children = context.countChildren();
 
         context.watch((currentIndex) => {
+            if (context.parent === undefined || context.children === undefined || children === undefined) return;
+
             FadeCarousel.push(context, "rotation");
 
             if (counter > children) {
@@ -63,13 +67,16 @@ export default class FadeCarousel extends Carousel {
      * @param parent Element
      * @param slide Element
      */
-    private static updateCurrentSlide(parent: Element, slide: Element): void {
+    private static updateCurrentSlide(
+        parent: Element,
+        slide: Element | null
+    ): void {
         const previousSlide = parent.querySelector(
             `.${this.currentSlideCSSClassName}`
         );
 
         if (elementExists(previousSlide)) {
-            previousSlide.classList.remove(this.currentSlideCSSClassName);
+            previousSlide?.classList.remove(this.currentSlideCSSClassName);
         }
 
         this.setSlideToCurrent(slide);
@@ -79,7 +86,7 @@ export default class FadeCarousel extends Carousel {
      * Assigns the current slide CSS class name to the target slide element
      * @param slides Element
      */
-    private static setSlideToCurrent(slide: Element): void {
-        slide.classList.add(this.currentSlideCSSClassName);
+    private static setSlideToCurrent(slide: Element | null): void {
+        slide?.classList.add(this.currentSlideCSSClassName);
     }
 }

@@ -1,4 +1,4 @@
-import { IInstantTokenCredentials } from "../interfaces/instant-token-manager";
+import { IInstantTokenCredentials } from "Shared/ts/interfaces/instant-token-manager";
 
 export default class InstantTokenManager {
     public userId: string;

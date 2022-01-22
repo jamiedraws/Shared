@@ -1,7 +1,7 @@
 import Player from "@vimeo/player";
-import { IVimeoManagerPosterImageSpecification } from "../interfaces/vimeo-manager";
-import { enumerateElements, elementExists } from "./html";
-import { createAppendScript } from "./resource";
+import { IVimeoManagerPosterImageSpecification } from "Shared/ts/interfaces/vimeo-manager";
+import { enumerateElements, elementExists } from "Shared/ts/utils/html";
+import { createAppendScript } from "Shared/ts/utils/resource";
 
 export default class VimeoManager {
     /**
@@ -133,7 +133,9 @@ export default class VimeoManager {
      * @param iframe HTMLIFrameElement
      * @returns XMLHttpRequest
      */
-    public getoEmbedByIframe(iframe: HTMLIFrameElement): XMLHttpRequest {
+    public getoEmbedByIframe(
+        iframe: HTMLIFrameElement
+    ): XMLHttpRequest | undefined {
         return VimeoManager.oEmbedRepo.get(iframe);
     }
 
@@ -144,7 +146,11 @@ export default class VimeoManager {
      * @param options any
      * @returns Player
      */
-    public createPlayerById(elementId: string, id: string, options?): Player {
+    public createPlayerById(
+        elementId: string,
+        id: string,
+        options?: any
+    ): Player {
         const config = options ?? {};
         config.id = id;
 
@@ -207,8 +213,8 @@ export default class VimeoManager {
      * @param iframe HTMLIFrameElement
      * @returns string | null
      */
-    public getIdByIframe(iframe: HTMLIFrameElement): string | null {
-        return elementExists(iframe) ? this.getIdByUrl(iframe.src) : null;
+    public getIdByIframe(iframe: HTMLIFrameElement): string | undefined {
+        return elementExists(iframe) ? this.getIdByUrl(iframe.src) : undefined;
     }
 
     /**
@@ -216,15 +222,15 @@ export default class VimeoManager {
      * @param url string
      * @returns string | null
      */
-    public getIdByUrl(url: string): string | null {
-        let id = null;
+    public getIdByUrl(url: string): string | undefined {
+        let id = undefined;
 
         const match = url.match(/\/player.vimeo.com\/video\/\d{9}/gi) ?? [];
 
         if (match.length === 1) {
             id = match
                 .shift()
-                .split(/\/player.vimeo.com\/video\//)
+                ?.split(/\/player.vimeo.com\/video\//)
                 .pop();
         }
 
@@ -242,12 +248,15 @@ export default class VimeoManager {
         elementId: string,
         player: Player
     ) {
-        this.observePlaceholder(document.querySelector(`#${elementId}`), {
-            childList: true
-        }).then((records) => {
+        this.observePlaceholder(
+            document.querySelector(`#${elementId}`) as HTMLElement,
+            {
+                childList: true
+            }
+        ).then((records) => {
             records.forEach((record) => {
                 const iframe = enumerateElements(record.addedNodes).find(
-                    (node) => node.getAttribute("src").match(id)
+                    (node) => (node.getAttribute("src") ?? "").match(id)
                 ) as HTMLIFrameElement;
 
                 if (iframe) {
@@ -308,7 +317,7 @@ export default class VimeoManager {
      * @param iframe HTMLIFrameElement
      * @returns Player
      */
-    public getPlayerByIframe(iframe: HTMLIFrameElement): Player {
+    public getPlayerByIframe(iframe: HTMLIFrameElement): Player | undefined {
         return VimeoManager.playerRepo.get(iframe);
     }
 
@@ -317,7 +326,7 @@ export default class VimeoManager {
      * @param player Player
      * @returns HTMLIFrameElement
      */
-    public getIframeByPlayer(player: Player): HTMLIFrameElement {
+    public getIframeByPlayer(player: Player): HTMLIFrameElement | undefined {
         return VimeoManager.iframeRepo.get(player);
     }
 }

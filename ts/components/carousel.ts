@@ -1,11 +1,11 @@
-import ICarousel from "shared/ts/interfaces/carousel/carousel";
+import ICarousel from "Shared/ts/interfaces/carousel/carousel";
 import {
     ICarouselEvent,
     ICarouselConfig,
     ICarouselControls
-} from "shared/ts/interfaces/carousel/carousel";
-import { observer } from "shared/ts/observers/intersection";
-import { enumerateElements } from "../utils/html";
+} from "Shared/ts/interfaces/carousel/carousel";
+import { observer } from "Shared/ts/observers/intersection";
+import { enumerateElements } from "Shared/ts/utils/html";
 
 export default class Carousel {
     /**
@@ -35,12 +35,7 @@ export default class Carousel {
     /**
      * Represents the element containing the carousel along with other user-interface components
      */
-    public container: Element;
-
-    /**
-     * Represents the user-interface status that can be overridden by specific user-actions
-     */
-    private static UIStatus: WeakMap<Element, string> = new WeakMap();
+    public container: Element | undefined;
 
     /**
      * Takes a carousel interface and integrates it with basic play controls
@@ -58,6 +53,8 @@ export default class Carousel {
      * @param context ICarousel
      */
     private static baseInitialize(context: ICarousel, carousel: Carousel) {
+        if (!context.container) return;
+
         Carousel.context.set(context.container, context);
         Carousel.events.set(context.container, []);
 
@@ -67,46 +64,15 @@ export default class Carousel {
     }
 
     /**
-     * Sets the user-interface status to "play". Represents the result of activating a play button.
-     * @param container Element
-     */
-    private static setUIStatusToPlay(container: Element): void {
-        this.UIStatus.set(container, "play");
-    }
-
-    /**
-     * Sets the user-interface status to "pause". Represents the result of activating a pause button.
-     * @param container Element
-     */
-    private static setUIStatusToPause(container: Element): void {
-        this.UIStatus.set(container, "pause");
-    }
-
-    /**
-     * Returns whether the current user-interface status is "play".
-     * @param container Element
-     * @returns boolean
-     */
-    private static isUIStatusPlay(container: Element): boolean {
-        return this.UIStatus.get(container) === "play";
-    }
-
-    /**
-     * Returns whether the current user-interface status is "pause".
-     * @param container Element
-     * @returns boolean
-     */
-    private static isUIStatusPause(container: Element): boolean {
-        return this.UIStatus.get(container) === "pause";
-    }
-
-    /**
      * Filters through all events matching a specified name and invokes the handler callback function
      * @param context ICarousel
      * @param name string
      */
     protected static push(context: ICarousel, name: string): void {
+        if (!context.container) return;
+
         const events = Carousel.events.get(context.container);
+        if (!events) return;
 
         events
             .filter((event) => event.name === name)
@@ -127,12 +93,15 @@ export default class Carousel {
     public on(
         name: string,
         handler: (
-            currentIndex: number,
-            prevIndex: number,
-            nextIndex: number
+            currentIndex: number | undefined,
+            prevIndex: number | undefined,
+            nextIndex: number | undefined
         ) => void
     ): void {
+        if (!this.container) return;
+
         const events = Carousel.events.get(this.container);
+        if (!events) return;
 
         events.push({
             name: name,
@@ -153,11 +122,15 @@ export default class Carousel {
             nextIndex: number
         ) => void
     ): void {
+        if (!this.container) return;
+
         const events = Carousel.events.get(this.container);
+        if (!events) return;
 
         const result = events.find(
             (event) => event.name === name && event.handler === handler
         );
+        if (!result) return;
 
         const index = events.indexOf(result);
 
@@ -169,7 +142,7 @@ export default class Carousel {
      * @param container Element
      * @returns ICarousel
      */
-    protected static getContext(container: Element): ICarousel {
+    protected static getContext(container: Element): ICarousel | undefined {
         return this.context.get(container);
     }
 
@@ -181,6 +154,8 @@ export default class Carousel {
         context: ICarousel,
         carousel: Carousel
     ): void {
+        if (!context.container) return;
+
         const config = context.container.getAttribute("data-carousel-config");
 
         if (config) {
@@ -229,6 +204,8 @@ export default class Carousel {
      * @param context ICarousel
      */
     private static observeContainer(context: ICarousel, carousel: Carousel) {
+        if (!context.container) return;
+
         this.updateAttributes(context, carousel);
 
         const observer = new MutationObserver((mutationRecords) => {
@@ -245,7 +222,10 @@ export default class Carousel {
      * @param index number
      */
     public goto(index: number): void {
+        if (!this.container) return;
+
         const context = Carousel.getContext(this.container);
+        if (!context) return;
 
         context.goto(index);
     }
@@ -254,7 +234,10 @@ export default class Carousel {
      * Plays the carousel continuously.
      */
     public play(persistCurrentIndex?: boolean): void {
+        if (!this.container) return;
+
         const context = Carousel.getContext(this.container);
+        if (!context) return;
 
         context.play(persistCurrentIndex);
     }
@@ -263,7 +246,10 @@ export default class Carousel {
      * Pauses the carousel
      */
     public pause(): void {
+        if (!this.container) return;
+
         const context = Carousel.getContext(this.container);
+        if (!context) return;
 
         context.pause();
     }
@@ -272,7 +258,10 @@ export default class Carousel {
      * Advances the carousel to the next slide
      */
     public next(): void {
+        if (!this.container) return;
+
         const context = Carousel.getContext(this.container);
+        if (!context) return;
 
         context.next();
     }
@@ -281,7 +270,10 @@ export default class Carousel {
      * Advances the carousel to the previous slide
      */
     public prev(): void {
+        if (!this.container) return;
+
         const context = Carousel.getContext(this.container);
+        if (!context) return;
 
         context.prev();
     }
@@ -290,25 +282,27 @@ export default class Carousel {
      * Enables the carousel to play continuously when the carousel's container element intersects the viewport; otherwise, the carousel will automatically pause.
      */
     public autoplay(): void {
+        if (!this.container) return;
+
         const self = this;
         const context = Carousel.getContext(this.container);
-        const id = context.parent.id;
+        if (!context) return;
 
-        let controller = false;
+        const id = context.parent?.id;
+
+        let rangeControl = false;
 
         observer(`#${id}`, {
             inRange: (record) => {
-                if (!controller) {
-                    controller = true;
+                if (!rangeControl) {
+                    rangeControl = true;
 
-                    if (!Carousel.isUIStatusPause(this.container)) {
-                        self.play(true);
-                    }
+                    self.play(true);
                 }
             },
             outRange: (record) => {
-                if (controller) {
-                    controller = false;
+                if (rangeControl) {
+                    rangeControl = false;
 
                     self.pause();
                 }
@@ -324,40 +318,32 @@ export default class Carousel {
      * Enables the carousel to activate the previous and next methods through user-interface components
      */
     public enablePrevNextControls(): void {
+        if (!this.container) return;
+
         const context = Carousel.getContext(this.container);
+        if (!context) return;
 
-        const prevButton = context.container.querySelector(".slide__prev");
-        const nextButton = context.container.querySelector(".slide__next");
+        const prevButton = context.container?.querySelector(".slide__prev");
+        const nextButton = context.container?.querySelector(".slide__next");
 
-        prevButton.addEventListener("click", () => {
-            Carousel.setUIStatusToPause(this.container);
-            this.prev();
-        });
-
-        nextButton.addEventListener("click", () => {
-            Carousel.setUIStatusToPause(this.container);
-            this.next();
-        });
+        prevButton?.addEventListener("click", this.prev.bind(context));
+        nextButton?.addEventListener("click", this.next.bind(context));
     }
 
     /**
      * Enables the carousel to activate the play and pause methods through user-interface components
      */
     public enablePlayPauseControls(): void {
+        if (!this.container) return;
+
         const context = Carousel.getContext(this.container);
+        if (!context) return;
 
-        const playButton = context.container.querySelector(".slide__play");
-        const pauseButton = context.container.querySelector(".slide__pause");
+        const playButton = context.container?.querySelector(".slide__play");
+        const pauseButton = context.container?.querySelector(".slide__pause");
 
-        playButton.addEventListener("click", () => {
-            Carousel.setUIStatusToPlay(this.container);
-            this.play();
-        });
-
-        pauseButton.addEventListener("click", () => {
-            Carousel.setUIStatusToPause(this.container);
-            this.pause();
-        });
+        playButton?.addEventListener("click", (event) => this.play());
+        pauseButton?.addEventListener("click", this.pause.bind(context));
     }
 
     /**
@@ -398,7 +384,7 @@ export default class Carousel {
         context: Carousel
     ): void {
         const index = parseInt(
-            thumbnailButton.getAttribute("data-slide-index")
+            thumbnailButton.getAttribute("data-slide-index") ?? ""
         );
 
         context.goto(index);
@@ -413,17 +399,21 @@ export default class Carousel {
         index: number,
         context: ICarousel
     ): void {
+        if (!context.container) return;
+
         const hasThumbnailButtons = Carousel.thumbnails.has(context.container);
 
         if (hasThumbnailButtons) {
             const thumbnailButtons = Carousel.thumbnails.get(context.container);
 
-            const currentButton = thumbnailButtons.find(
+            const currentButton = thumbnailButtons?.find(
                 (thumbnailButton) =>
                     parseInt(
-                        thumbnailButton.getAttribute("data-slide-index")
+                        thumbnailButton.getAttribute("data-slide-index") ?? ""
                     ) === index
             );
+
+            if (!currentButton || !thumbnailButtons) return;
 
             Carousel.updateThumbnailNavigationMarker(
                 currentButton,
@@ -436,6 +426,8 @@ export default class Carousel {
      * Enables the carousel to activate thumbnail controls through user-interface components
      */
     public enableThumbnailControls(): void {
+        if (!this.container) return;
+
         const thumbnailButtons = enumerateElements(
             this.container.querySelectorAll(".slide__thumbnail")
         );
@@ -455,12 +447,15 @@ export default class Carousel {
         });
 
         const context = Carousel.getContext(this.container);
+        if (!context) return;
 
-        this.on("rotation", (currentIndex) =>
+        this.on("rotation", (currentIndex) => {
+            if (currentIndex === undefined) return;
+
             Carousel.updateThumbnailNavigationMarkerByIndex(
                 currentIndex,
                 context
             )
-        );
+        });
     }
 }

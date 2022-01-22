@@ -1,5 +1,5 @@
-import { IVimeoManagerPosterImageSpecification } from "./vimeo-manager";
-import { IVimeoPosterPlayerPlaceholder } from "./vimeo-poster-player";
+import { IVimeoManagerPosterImageSpecification } from "Shared/ts/interfaces/vimeo-manager";
+import { IVimeoPosterPlayerPlaceholder } from "Shared/ts/interfaces/vimeo-poster-player";
 
 export default interface IVimeoPlayerButtonConfig {
     /**

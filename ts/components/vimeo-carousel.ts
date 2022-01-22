@@ -1,10 +1,10 @@
 import Player from "@vimeo/player";
-import VimeoManager from "shared/ts/utils/vimeo-manager";
+import VimeoManager from "Shared/ts/utils/vimeo-manager";
 
-import Carousel from "shared/ts/components/carousel";
-import IVimeoCarousel from "shared/ts/interfaces/carousel/vimeo-carousel";
+import Carousel from "Shared/ts/components/carousel";
+import IVimeoCarousel from "Shared/ts/interfaces/carousel/vimeo-carousel";
 
-import { createElement, elementExists } from "shared/ts/utils/html";
+import { createElement, elementExists } from "Shared/ts/utils/html";
 
 interface IVimeoCarouselRepository {
     /**
@@ -80,16 +80,21 @@ export default class VimeoCarousel extends Carousel {
      */
     private static createWatch(context: IVimeoCarousel): void {
         const repo = VimeoCarousel.vimeoRepository.get(context);
+        if (!repo) return;
 
         context.watch((currentIndex, previousIndex, nextIndex) => {
             VimeoCarousel.push(context, "rotation");
 
-            const previousSlide = context.children.item(previousIndex);
+            const previousSlide = context.children?.item(previousIndex);
+            if (!previousSlide) return;
+
             VimeoCarousel.pauseVimeo(previousSlide).catch((error) =>
                 console.info(error)
             );
 
-            const currentSlide = context.children.item(currentIndex);
+            const currentSlide = context.children?.item(currentIndex);
+            if (!currentSlide) return;
+
             VimeoCarousel.processPosterImage(currentSlide)
                 .then(() =>
                     VimeoCarousel.initializeCarouselVimeoApi(context, repo)
@@ -103,7 +108,9 @@ export default class VimeoCarousel extends Carousel {
                 VimeoCarousel.initializeCarouselVimeoApi(context, repo)
             );
 
-            const nextSlide = context.children.item(nextIndex);
+            const nextSlide = context.children?.item(nextIndex);
+            if (!nextSlide) return;
+
             VimeoCarousel.processPosterImage(nextSlide).catch((error) =>
                 console.info(error)
             );
@@ -167,12 +174,12 @@ export default class VimeoCarousel extends Carousel {
      */
     private static getVimeoIdByPlaceholder(
         placeholder: Element
-    ): string | null {
+    ): string | undefined {
         if (placeholder.hasAttribute("data-vimeo-carousel-id")) {
             const match =
                 placeholder
                     .getAttribute("data-vimeo-carousel-id")
-                    .match(/^\d{9}/i) ?? [];
+                    ?.match(/^\d{9}/i) ?? [];
 
             if (match.length === 1) {
                 return match.shift();
@@ -181,13 +188,13 @@ export default class VimeoCarousel extends Carousel {
 
         if (placeholder.hasAttribute("data-vimeo-id")) {
             return this.vimeoManager.getIdByUrl(
-                placeholder.getAttribute("data-vimeo-id")
+                placeholder.getAttribute("data-vimeo-id") ?? ""
             );
         }
 
         if (placeholder.hasAttribute("data-vimeo-url")) {
             return this.vimeoManager.getIdByUrl(
-                placeholder.getAttribute("data-vimeo-url")
+                placeholder.getAttribute("data-vimeo-url") ?? ""
             );
         }
     }
@@ -197,7 +204,7 @@ export default class VimeoCarousel extends Carousel {
      * @param slide Element
      * @returns Element
      */
-    private static getVimeoPlaceholderBySlide(slide: Element): Element {
+    private static getVimeoPlaceholderBySlide(slide: Element): Element | null {
         return (
             slide.querySelector("[data-vimeo-carousel-id]") ??
             slide.querySelector("[data-vimeo-id]") ??
@@ -213,11 +220,15 @@ export default class VimeoCarousel extends Carousel {
         return new Promise<void>((resolve, reject) => {
             if (!elementExists(slide.querySelector("img"))) {
                 const placeholder = this.getVimeoPlaceholderBySlide(slide);
+                if (!placeholder) return;
+
                 const iframe = slide.querySelector("iframe");
+                if (!iframe) return;
 
                 const id =
                     this.vimeoManager.getIdByIframe(iframe) ??
                     this.getVimeoIdByPlaceholder(placeholder);
+                if (!id) return;
 
                 this.vimeoManager
                     .generatePosterImage(id)
@@ -335,7 +346,7 @@ export default class VimeoCarousel extends Carousel {
     ): void {
         const placeholder = this.getVimeoPlaceholderBySlide(slide);
 
-        if (elementExists(placeholder)) {
+        if (placeholder && elementExists(placeholder)) {
             if (
                 placeholder.hasAttribute("data-vimeo-id") ||
                 placeholder.hasAttribute("data-vimeo-url")
@@ -343,11 +354,14 @@ export default class VimeoCarousel extends Carousel {
                 const elementId = placeholder.id;
                 const vimeoId =
                     this.vimeoManager.getIdByUrl(
-                        placeholder.getAttribute("data-vimeo-id")
+                        placeholder.getAttribute("data-vimeo-id") ?? ""
                     ) ??
                     this.vimeoManager.getIdByUrl(
-                        placeholder.getAttribute("data-vimeo-url")
+                        placeholder.getAttribute("data-vimeo-url") ?? ""
                     );
+
+                if (!vimeoId) return;
+
                 const player = VimeoCarousel.vimeoManager.createPlayerById(
                     elementId,
                     vimeoId
@@ -377,14 +391,14 @@ export default class VimeoCarousel extends Carousel {
         if (element.hasAttribute("src")) {
             const src = element.getAttribute("src");
 
-            repo.isAutoplay = src.match("background=1") ? true : false;
+            repo.isAutoplay = src?.match("background=1") ? true : false;
             return;
         }
 
         if (element.hasAttribute("data-vimeo-background")) {
             const attr = element.getAttribute("data-vimeo-background");
 
-            repo.isAutoplay = attr.match("true") ? true : false;
+            repo.isAutoplay = attr?.match("true") ? true : false;
             return;
         }
 
@@ -410,7 +424,9 @@ export default class VimeoCarousel extends Carousel {
         });
 
         player.on("ended", (data) => {
-            const nextSlide = context.children.item(context.nextIndex());
+            const nextSlide = context.children?.item(context.nextIndex() ?? -1);
+
+            if (!nextSlide) return;
 
             VimeoCarousel.restartVimeo(nextSlide)
                 .then(() => {
@@ -437,7 +453,7 @@ export default class VimeoCarousel extends Carousel {
     ) {
         if (!repo.isInitialized) {
             repo.isInitialized = true;
-            context.container.classList.add("slide--ready-for-vimeo");
+            context.container?.classList.add("slide--ready-for-vimeo");
         }
     }
 
@@ -457,7 +473,7 @@ export default class VimeoCarousel extends Carousel {
                         "[data-vimeo-carousel-id]"
                     );
 
-                    if (elementExists(placeholder)) {
+                    if (placeholder && elementExists(placeholder)) {
                         VimeoCarousel.createIframe(placeholder)
                             .then((iframe) => {
                                 VimeoCarousel.setIframeByPlaceholder(
@@ -585,7 +601,7 @@ export default class VimeoCarousel extends Carousel {
      */
     private static createIframe(element: Element): Promise<HTMLIFrameElement> {
         return new Promise<HTMLIFrameElement>((resolve, reject) => {
-            const id = element.getAttribute("data-vimeo-carousel-id");
+            const id = element.getAttribute("data-vimeo-carousel-id") ?? "";
 
             VimeoCarousel.vimeoManager
                 .createIframeById(id)
@@ -616,13 +632,19 @@ export default class VimeoCarousel extends Carousel {
      * Resumes playing the Vimeo video and then advances to the next slide.
      */
     public play(persistCurrentIndex?: boolean): void {
+        if (!this.container) return;
+
         const context = VimeoCarousel.getContext(
             this.container
         ) as IVimeoCarousel;
 
         context.setAuto(true);
 
-        const currentSlide = context.children.item(context.currentIndex());
+        const currentSlide = context.children?.item(
+            context.currentIndex() ?? -1
+        );
+
+        if (!currentSlide) return;
 
         VimeoCarousel.getVimeoIframe(currentSlide)
             .then((iframe) => {
@@ -639,13 +661,19 @@ export default class VimeoCarousel extends Carousel {
      * Pauses the Vimeo video and the carousel
      */
     public pause(): void {
+        if (!this.container) return;
+
         const context = VimeoCarousel.getContext(
             this.container
         ) as IVimeoCarousel;
 
         context.pause();
 
-        const currentSlide = context.children.item(context.currentIndex());
+        const currentSlide = context.children?.item(
+            context.currentIndex() ?? -1
+        );
+
+        if (!currentSlide) return;
 
         VimeoCarousel.getVimeoIframe(currentSlide).then((iframe) => {
             VimeoCarousel.getVimeoPlayer(iframe).then((player) => {

@@ -17,7 +17,7 @@ export default class FadeSlideCarouselAdapter
      * Disables the Carousel's auto-scroll rotation behavior and enables shim mode
      */
     public initialize() {
-        this.api.setShim(true);
-        this.api.handleRotation(false);
+        this.api?.setShim(true);
+        this.api?.handleRotation(false);
     }
 }

@@ -1,15 +1,23 @@
-import { ISlideApi } from "shared/ts/interfaces/carousel/slide/slide";
+// @ts-nocheck
 
-const generate = function (properties, o?) {
-    return Object.defineProperties(o || {}, properties);
+import {
+    ISlideApi,
+    ISlideOrganization,
+    ISlideDefault,
+    ISlideWorker
+} from "Shared/ts/interfaces/carousel/slide/slide";
+
+type SlideIntoTask = () => void;
+
+const generate = function <P extends {}>(properties: P, o?: {} | undefined) {
+    const x = Object.defineProperties(o || {}, properties);
+    return x;
 };
 
-const toArray = function (collection) {
-    if (collection !== null && typeof collection !== "undefined") {
-        const store = [];
-        const ar = store.slice.call(collection);
-        return ar;
-    }
+const toArray = function (
+    collection: NodeList | HTMLCollection
+): (Node | Element)[] {
+    return Array.from(collection);
 };
 
 const slide = generate({
@@ -59,12 +67,16 @@ const slide = generate({
         value: []
     },
     request: {
-        value: function (id) {
+        value: function (id: string): ISlideWorker {
             return this.team[id];
         }
     },
     observer: {
-        value: function (parent, children, cb) {
+        value: function (
+            parent: Element,
+            children: NodeList,
+            cb: (index: number) => void
+        ) {
             if (window.hasOwnProperty("IntersectionObserver")) {
                 const io = new IntersectionObserver(
                     function (entries) {
@@ -75,6 +87,7 @@ const slide = generate({
                             ) {
                                 const items = toArray(children);
                                 const index = items.indexOf(entry.target);
+
                                 cb(index);
                             }
                         });
@@ -86,10 +99,10 @@ const slide = generate({
                     }
                 );
 
-                return function (children) {
+                return function (children: NodeList) {
                     const items = toArray(children);
                     items.forEach(function (item) {
-                        io.observe(item);
+                        io.observe(item as Element);
                     });
                 };
             } else {
@@ -104,7 +117,7 @@ const slide = generate({
     manager: {
         value: generate({
             config: {
-                value: function (options) {
+                value: function (options: Record<string, any>) {
                     const self = this;
 
                     if (typeof options === "object") {
@@ -118,7 +131,12 @@ const slide = generate({
                 }
             },
             create: {
-                value: function (api, id, parent, config) {
+                value: function (
+                    api: ISlideApi,
+                    id: string,
+                    parent: Element,
+                    config
+                ) {
                     const self = Object.create(api);
 
                     Object.defineProperties(self, {
@@ -161,16 +179,20 @@ const slide = generate({
                 }
             },
             observer: {
-                value: function (parent, children) {
+                value: function (parent: Element, children: HTMLCollection) {
                     const self = this;
-                    return slide.observer(parent, children, function (index) {
-                        self.setIndex(index);
-                        self.setCallback();
-                    });
+                    return slide.observer(
+                        parent,
+                        children,
+                        function (index: number) {
+                            self.setIndex(index);
+                            self.setCallback();
+                        }
+                    );
                 }
             },
             getIndex: {
-                value: function (index) {
+                value: function (index: number) {
                     let result = this.index;
                     const children = this.children.length;
 
@@ -188,7 +210,7 @@ const slide = generate({
                 }
             },
             setIndex: {
-                value: function (index) {
+                value: function (index: number) {
                     this.index = this.getIndex(index);
                 }
             },
@@ -199,12 +221,12 @@ const slide = generate({
                 }
             },
             isValidNumber: {
-                value: function (number) {
+                value: function (number: number) {
                     return typeof number === "number" && !isNaN(number);
                 }
             },
             setDelay: {
-                value: function (time) {
+                value: function (time: string) {
                     let parseTime = parseInt(time);
 
                     const illegal =
@@ -219,7 +241,7 @@ const slide = generate({
                 }
             },
             setCallback: {
-                value: function (cb) {
+                value: function () {
                     if (typeof this.handleCallback === "function") {
                         this.handleCallback(
                             this.index,
@@ -247,7 +269,7 @@ const slide = generate({
                 }
             },
             setTask: {
-                value: function (index) {
+                value: function (index: number) {
                     const self = this;
 
                     self.setDelay();
@@ -321,7 +343,7 @@ const slide = generate({
                 }
             },
             setAuto: {
-                value: function (status) {
+                value: function (status: boolean) {
                     const worker = slide.request(this.id);
                     if (typeof status === "boolean") {
                         worker.auto = status;
@@ -329,7 +351,7 @@ const slide = generate({
                 }
             },
             setScrollIntoView: {
-                value: function (options) {
+                value: function (options: ScrollIntoViewOptions) {
                     const worker = slide.request(this.id);
                     if (
                         typeof options === "object" ||
@@ -361,13 +383,13 @@ const slide = generate({
                 }
             },
             setDelay: {
-                value: function (delay) {
+                value: function (delay: string) {
                     const worker = slide.request(this.id);
                     worker.setDelay(delay);
                 }
             },
             setError: {
-                value: function (code, message) {
+                value: function (code: string, message: string) {
                     if (
                         typeof code === "string" &&
                         typeof message === "string"
@@ -381,7 +403,7 @@ const slide = generate({
                 }
             },
             getError: {
-                value: function (code) {
+                value: function (code: string) {
                     if (typeof code !== "string") {
                         code = "ERR-C";
                     }
@@ -393,19 +415,19 @@ const slide = generate({
                 }
             },
             hasError: {
-                value: function (code) {
+                value: function (code: string) {
                     return slide.errors.hasOwnProperty(code);
                 }
             },
             config: {
-                value: function (options) {
+                value: function (options: {}) {
                     const worker = slide.request(this.id);
                     worker.config.call(this, options);
                 }
             },
             setShim: {
                 enumerable: true,
-                value: function (status) {
+                value: function (status: boolean) {
                     const worker = slide.request(this.id);
 
                     if (typeof status === "boolean") {
@@ -415,7 +437,7 @@ const slide = generate({
             },
             play: {
                 enumerable: true,
-                value: function (persistCurrentIndex) {
+                value: function (persistCurrentIndex?: boolean) {
                     const worker = slide.request(this.id);
                     const index =
                         typeof persistCurrentIndex === "boolean" &&
@@ -471,7 +493,7 @@ const slide = generate({
                 }
             },
             getIndex: {
-                value: function (index) {
+                value: function (index: number) {
                     if (typeof index !== "number") {
                         this.getError("ERR-X");
                     }
@@ -481,7 +503,7 @@ const slide = generate({
                 }
             },
             setIndex: {
-                value: function (index) {
+                value: function (index: number) {
                     if (typeof index !== "number") {
                         this.getError("ERR-X");
                     }
@@ -491,7 +513,7 @@ const slide = generate({
                 }
             },
             handleRotation: {
-                value: function (status) {
+                value: function (status: boolean) {
                     const worker = slide.request(this.id);
                     if (typeof status === "boolean") {
                         worker.handleRotation = status;
@@ -500,7 +522,7 @@ const slide = generate({
             },
             goto: {
                 enumerable: true,
-                value: function (index) {
+                value: function (index: number) {
                     if (typeof index !== "number") {
                         this.getError("ERR-X");
                     }
@@ -516,7 +538,11 @@ const slide = generate({
     interface: {
         value: generate({
             into: {
-                value: function (parent, init, app) {
+                value: function (
+                    parent: Element,
+                    init: SlideIntoTask | Record<string, any>,
+                    app: SlideIntoTask | Record<string, any>
+                ) {
                     const worker = slide.manager.assign();
                     let task = app;
                     let options = {};
@@ -544,7 +570,7 @@ const slide = generate({
                 }
             },
             proto: {
-                value: function (parameters) {
+                value: function (parameters: Record<string, any>) {
                     if (typeof parameters === "object") {
                         Object.create(slide.api, parameters);
                         Object.keys(parameters).forEach(function (parameter) {

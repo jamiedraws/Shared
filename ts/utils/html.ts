@@ -1,4 +1,4 @@
-import * as Data from "shared/ts/utils/data";
+import * as Data from "Shared/ts/utils/data";
 
 export type HTMLList =
     | Element
@@ -30,11 +30,11 @@ export const createElement = <T extends {}>(
  * @param attributes T
  * @returns HTMLElement
  */
-export const setElementAttributes = <T extends {}>(
+export const setElementAttributes = <T extends { [key: string]: any }>(
     element: HTMLElement,
     attributes?: T
 ): HTMLElement => {
-    if (Data.isObject(attributes)) {
+    if (attributes && Data.isObject(attributes)) {
         Object.keys(attributes).forEach((attribute) => {
             element.setAttribute(attribute, attributes[attribute]);
         });
@@ -70,7 +70,7 @@ export const appendElement = (element: HTMLElement): HTMLElement => {
  * @param element HTMLItem
  * @return boolean
  */
-export const elementExists = (element: HTMLItem): boolean => {
+export const elementExists = (element: HTMLItem | null): boolean => {
     return document.body.contains(element) || document.head.contains(element);
 };
 

@@ -1,5 +1,5 @@
-import SlideCarouselAdapter from "./slide-carousel";
-import IVimeoCarousel from "../../../../interfaces/carousel/vimeo-carousel";
+import SlideCarouselAdapter from "Shared/ts/api/carousel/slide/adapters/slide-carousel";
+import IVimeoCarousel from "Shared/ts/interfaces/carousel/vimeo-carousel";
 
 export default class VimeoSlideCarouselAdapter
     extends SlideCarouselAdapter

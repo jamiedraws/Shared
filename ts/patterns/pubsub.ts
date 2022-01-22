@@ -2,7 +2,7 @@ import {
     IPubSubEvents,
     IPubSubEventTask,
     PubSubTask
-} from "../interfaces/patterns/pubsub";
+} from "Shared/ts/interfaces/patterns/pubsub";
 
 export default class PubSub {
     /**
@@ -32,6 +32,10 @@ export default class PubSub {
     public publish(event: string, data: any): boolean {
         const events = PubSub.events.get(this);
 
+        if (!events) {
+            return false;
+        }
+
         if (!events[event]) {
             return false;
         }
@@ -52,21 +56,27 @@ export default class PubSub {
      * @returns string
      */
     public subscribe(event: string, task: PubSubTask): string {
+        let token = "";
+        let id = PubSub.id.get(this);
+
         const events = PubSub.events.get(this);
 
-        if (!events[event]) {
-            events[event] = [];
+        if (events && id) {
+            if (!events[event]) {
+                events[event] = [];
+            }
+
+            if (id) {
+                PubSub.id.set(this, (id += 1));
+
+                token = id.toString();
+
+                events[event].push({
+                    token: token,
+                    task: task
+                });
+            }
         }
-
-        let id = PubSub.id.get(this);
-        PubSub.id.set(this, (id += 1));
-
-        const token = id.toString();
-
-        events[event].push({
-            token: token,
-            task: task
-        });
 
         return token;
     }
@@ -76,23 +86,27 @@ export default class PubSub {
      * @param token string
      * @returns string
      */
-    public unsubscribe(token: string): string {
+    public unsubscribe(token: string): string | undefined {
+        let found = false;
+
         const events = PubSub.events.get(this);
 
-        const found = Object.keys(events).some((event: string) => {
-            return events[event].some(
-                (subscriber: IPubSubEventTask, index: number) => {
-                    const areEqual = subscriber.token === token.toString();
+        if (events) {
+            found = Object.keys(events).some((event: string) => {
+                return events[event].some(
+                    (subscriber: IPubSubEventTask, index: number) => {
+                        const areEqual = subscriber.token === token.toString();
 
-                    if (areEqual) {
-                        events[event].splice(index, 1);
+                        if (areEqual) {
+                            events[event].splice(index, 1);
+                        }
+
+                        return areEqual;
                     }
+                );
+            });
+        }
 
-                    return areEqual;
-                }
-            );
-        });
-
-        return found ? token : null;
+        return found ? token : undefined;
     }
 }

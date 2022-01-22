@@ -1,9 +1,9 @@
-import { elementExists, renderTemplate } from "shared/ts/utils/html";
+import { elementExists, renderTemplate } from "Shared/ts/utils/html";
 import {
     IToastHTMLTemplate,
     IToastConfig,
     IToastEventManager
-} from "./../interfaces/toast";
+} from "Shared/ts/interfaces/toast";
 
 export default class Toast {
     /**
@@ -54,7 +54,7 @@ export default class Toast {
             Toast.message.set(this, config.message);
         }
 
-        const template = Toast.createTemplate(id, config);
+        const template = Toast.createTemplate(id, config ?? {});
 
         Toast.template.set(this, template);
         Toast.renderTemplate(template);
@@ -65,6 +65,8 @@ export default class Toast {
      * @param template IToastTemplate
      */
     private static renderTemplate(template: IToastHTMLTemplate): void {
+        if (!template.container) return;
+
         this.body.appendChild(template.container);
 
         template.container.classList.add("toast--is-ready");
@@ -127,9 +129,12 @@ export default class Toast {
     private static setToInert(context: Toast, event: TransitionEvent): void {
         const template = Toast.template.get(context);
 
-        if (event.target === template.stage) {
-            template.dismissButton.setAttribute("hidden", "true");
-            template.textContainer.innerHTML = "";
+        if (template && event.target === template.stage) {
+            template.dismissButton?.setAttribute("hidden", "true");
+
+            if (template.textContainer) {
+                template.textContainer.innerHTML = "";
+            }
         }
     }
 
@@ -139,6 +144,7 @@ export default class Toast {
      */
     private static setInitializer(context: Toast): void {
         if (
+            document.activeElement &&
             elementExists(document.activeElement) &&
             document.activeElement !== this.body
         ) {
@@ -160,18 +166,18 @@ export default class Toast {
         }
     }
 
-    private static notifyToasts(id?: string): void {
+    private static notifyToasts(id: string): void {
         const toast = this.context.get(id);
 
         this.context.forEach((context) => {
             const template = this.template.get(context);
 
             if (context === toast) {
-                template.container.classList.add("toast--active");
+                template?.container?.classList.add("toast--active");
             }
 
             if (context !== toast) {
-                template.container.classList.remove("toast--active");
+                template?.container?.classList.remove("toast--active");
                 context.hide();
             }
         });
@@ -186,7 +192,9 @@ export default class Toast {
 
         const template = Toast.template.get(this);
 
-        template.textContainer.innerHTML = message;
+        if (template?.textContainer) {
+            template.textContainer.innerHTML = message;
+        }
     }
 
     /**
@@ -194,22 +202,32 @@ export default class Toast {
      */
     public show() {
         const template = Toast.template.get(this);
+        if (!template) return;
+
         const message = Toast.message.get(this);
+        if (!message) return;
+
         const event = Toast.eventManager.get(this);
+        if (!event) return;
 
-        template.textContainer.innerHTML = message;
+        const id = template.textContainer?.id;
+        if (!id) return;
 
-        template.dismissButton.removeAttribute("hidden");
-        template.dismissButton.addEventListener("click", event.dismissButton);
+        if (template.textContainer) {
+            template.textContainer.innerHTML = message;
+        }
 
-        template.container.removeEventListener("transitionend", event.stage);
+        template.dismissButton?.removeAttribute("hidden");
+        template.dismissButton?.addEventListener("click", event.dismissButton);
+
+        template.container?.removeEventListener("transitionend", event.stage);
 
         requestAnimationFrame((callback) => {
-            template.container.classList.remove("toast--hidden");
+            template.container?.classList.remove("toast--hidden");
         });
 
         Toast.setInitializer(this);
-        Toast.notifyToasts(template.textContainer.id);
+        Toast.notifyToasts(id);
     }
 
     /**
@@ -217,12 +235,16 @@ export default class Toast {
      */
     public hide() {
         const template = Toast.template.get(this);
+        if (!template) return;
+
         const event = Toast.eventManager.get(this);
+        if (!event) return;
 
-        template.container.classList.add("toast--hidden");
+        template.container?.classList.add("toast--hidden");
 
-        template.container.addEventListener("transitionend", event.stage);
-        template.dismissButton.removeEventListener(
+        template.container?.addEventListener("transitionend", event.stage);
+
+        template.dismissButton?.removeEventListener(
             "click",
             event.dismissButton
         );

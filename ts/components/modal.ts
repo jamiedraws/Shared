@@ -1,13 +1,13 @@
-import IModalConfig from "shared/ts/interfaces/modal";
-import { IModalHTMLTemplate } from "shared/ts/interfaces/modal";
-import FocusTrap from "shared/ts/utils/focus-trap";
-import enableInertSupport from "../utils/inert";
+import IModalConfig from "Shared/ts/interfaces/modal";
+import { IModalHTMLTemplate } from "Shared/ts/interfaces/modal";
+import FocusTrap from "Shared/ts/utils/focus-trap";
+import enableInertSupport from "Shared/ts/utils/inert";
 import {
     setElementAttributes,
     createElement,
     enumerateElements,
     elementExists
-} from "shared/ts/utils/html";
+} from "Shared/ts/utils/html";
 
 enableInertSupport();
 
@@ -58,10 +58,10 @@ export default class Modal {
      * @param root HTMLElement
      */
     constructor(
-        root: HTMLElement = document.getElementById("#modal"),
+        root: HTMLElement | null = document.getElementById("#modal"),
         userConfig?: IModalConfig
     ) {
-        if (elementExists(root) && Modal.isRootChildOfBody(root)) {
+        if (root && elementExists(root) && Modal.isRootChildOfBody(root)) {
             const config = userConfig ?? {};
             const template = Modal.createHTMLTemplate(root, config);
 
@@ -365,7 +365,7 @@ export default class Modal {
      * Captures the element that contains the ".modal-dialog--is-active" class and retrieves the Modal instance that is associated with the modal dialog element.
      * @returns Modal
      */
-    private static getContextByActiveRoot(): Modal {
+    private static getContextByActiveRoot(): Modal | undefined {
         const root = document.querySelector(
             ".modal-dialog--is-active"
         ) as HTMLElement;
@@ -378,7 +378,7 @@ export default class Modal {
      * @param actor HTMLElement
      * @returns Modal
      */
-    private static getContextByActorId(actor: HTMLElement): Modal {
+    private static getContextByActorId(actor: HTMLElement): Modal | undefined {
         return this.context.get(
             actor.getAttribute("data-modal-dialog-id") ?? ""
         );
@@ -389,7 +389,9 @@ export default class Modal {
      * @param actor HTMLElement
      * @returns Modal
      */
-    private static getContextByActorParentId(actor: HTMLElement): Modal {
+    private static getContextByActorParentId(
+        actor: HTMLElement
+    ): Modal | undefined {
         return this.context.get(
             actor.getAttribute("data-modal-dialog-parent-id") ?? ""
         );
@@ -399,8 +401,9 @@ export default class Modal {
      * Takes an actor element to retrieve its associated Modal instance, opens the modal and sets focus to the first focusable element within that modal.
      * @param actor HTMLElement
      */
-    private static handleOpenEvent(actor: HTMLElement) {
+    private static handleOpenEvent(actor: HTMLElement): void {
         const context = this.getContextByActorId(actor);
+        if (!context) return;
 
         this.handleOpenState(context, actor);
     }
@@ -409,8 +412,9 @@ export default class Modal {
      * Takes an actor element to retrieve its associated Modal instance, retrieves the actor that opened the modal, closes the modal, and sets focus back to the actor that opened the modal.
      * @param actor HTMLElement
      */
-    private static handleCloseEvent(actor: HTMLElement) {
+    private static handleCloseEvent(actor: HTMLElement): void {
         const context = this.getContextByActorId(actor);
+        if (!context) return;
 
         this.handleCloseState(context);
     }
@@ -426,6 +430,8 @@ export default class Modal {
     ): void {
         if (event.key.toLowerCase() === key.toLowerCase()) {
             const context = this.getContextByActiveRoot();
+            if (!context) return;
+
             this.handleCloseState(context);
         }
     }
@@ -459,10 +465,16 @@ export default class Modal {
      * Adds a blur event to the modal dialog assigning the first focusable element as the next focusable element. Adds a click event to the modal dialog stage area to determine if pointer-device targets the backdrop area and will close the modal if true.
      * @param context Modal
      */
-    private static setInstanceEvents(context: Modal) {
+    private static setInstanceEvents(context: Modal): void {
         const template = this.template.get(context);
+        if (!template) return;
+
         const root = this.root.get(context);
+        if (!root) return;
+
         const focus = this.focus.get(context);
+        if (!focus) return;
+
         const firstElement = focus.firstElement() as HTMLElement;
 
         root.addEventListener("click", (event: MouseEvent) => {
@@ -498,7 +510,10 @@ export default class Modal {
      */
     private static handleOpenState(context: Modal, actor?: HTMLElement): void {
         const root = this.root.get(context);
+        if (!root) return;
+
         const focus = this.focus.get(context);
+        if (!focus) return;
 
         this.makeRootVisible(root);
         this.makeActive(context);
@@ -508,7 +523,7 @@ export default class Modal {
         focus.on();
         this.addParentIdToActors(
             focus.focusElements,
-            root.getAttribute("data-modal-dialog-parent-id")
+            root.getAttribute("data-modal-dialog-parent-id") ?? ""
         );
 
         const firstElement = focus.firstElement() as HTMLElement;
@@ -527,14 +542,22 @@ export default class Modal {
      */
     private static handleCloseState(context: Modal): void {
         const root = this.root.get(context);
+        if (!root) return;
+
         const focus = this.focus.get(context);
+        if (!focus) return;
 
         focus.off();
 
         const openActor = this.actor.get(context);
+        if (!openActor) return;
 
         this.makeRootInvisible(root);
-        this.makeActive(this.getContextByActorParentId(openActor));
+
+        const modal = this.getContextByActorParentId(openActor);
+        if (!modal) return;
+
+        this.makeActive(modal);
 
         this.updateFocusStateByActor(openActor);
 
@@ -551,6 +574,8 @@ export default class Modal {
     private static makeActive(context: Modal): void {
         this.context.forEach((modal) => {
             const root = Modal.root.get(modal);
+            if (!root) return;
+
             const action = context === modal ? "add" : "remove";
 
             root.classList[action]("modal-dialog--is-active");
@@ -597,6 +622,8 @@ export default class Modal {
 
         if (context && this.anyOpenModalsStatus) {
             const focus = this.focus.get(context);
+            if (!focus) return;
+
             focus.on();
         }
     }
@@ -611,7 +638,7 @@ export default class Modal {
         this.context.forEach((context) => {
             const root = Modal.root.get(context);
 
-            if (Modal.isRootVisible(root)) {
+            if (root && Modal.isRootVisible(root)) {
                 Modal.anyOpenModalsStatus = true;
             }
         });

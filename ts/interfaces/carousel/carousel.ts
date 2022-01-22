@@ -7,9 +7,9 @@ export interface ICarouselEvent {
      * Represents the handler callback that will invoke when the carousel event emits
      */
     handler: (
-        currentIndex: number,
-        previousIndex: number,
-        nextIndex: number
+        currentIndex: number | undefined,
+        previousIndex: number | undefined,
+        nextIndex: number | undefined
     ) => void;
 }
 
@@ -44,15 +44,15 @@ export default interface ICarousel {
     /**
      * Represents the element containing the carousel along with other user-interface components
      */
-    container: Element;
+    container: Element | undefined;
     /**
      * Represents the parent carousel element
      */
-    parent: Element;
+    parent: Element | undefined;
     /**
      * Represents the HTMLCollection list of carousel slides
      */
-    children: HTMLCollection;
+    children: HTMLCollection | undefined;
     /**
      * Returns the carousel's autoplay status
      */
@@ -74,11 +74,11 @@ export default interface ICarousel {
     /**
      * Returns the total number of slides in the carousel
      */
-    countChildren: () => number;
+    countChildren: () => number | undefined;
     /**
      * Returns the current carousel's delay time
      */
-    getDelay: () => number;
+    getDelay: () => number | undefined;
     /**
      * Overrides the carousel's delay time
      */
@@ -102,19 +102,19 @@ export default interface ICarousel {
     /**
      * Returns the carousel's previous index
      */
-    prevIndex: () => number;
+    prevIndex: () => number | undefined;
     /**
      * Returns the carousel's next index
      */
-    nextIndex: () => number;
+    nextIndex: () => number | undefined;
     /**
      * Returns the carousel's current index
      */
-    currentIndex: () => number;
+    currentIndex: () => number | undefined;
     /**
      * Returns the carousel's predicted index within it's boundary range based on a number
      */
-    getIndex: (index: number) => number;
+    getIndex: (index: number) => number | undefined;
     /**
      * Sets the carousel's index number within it's boundary range based on a number
      */

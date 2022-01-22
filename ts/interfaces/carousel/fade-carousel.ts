@@ -1,4 +1,4 @@
-import ICarousel from "./carousel";
+import ICarousel from "Shared/ts/interfaces/carousel/carousel";
 
 /**
  * A contract representing the properties and methods that must conform to the FadeCarousel application

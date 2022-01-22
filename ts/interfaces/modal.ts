@@ -1,4 +1,4 @@
-import { HTMLItem } from "shared/ts/utils/html";
+import { HTMLItem } from "Shared/ts/utils/html";
 
 export interface IModalHTMLTemplate {
     /**

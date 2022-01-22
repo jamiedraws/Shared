@@ -1,4 +1,4 @@
-import IMediaPlayerAdapter from "../interfaces/media-player/media-player";
+import IMediaPlayerAdapter from "Shared/ts/interfaces/media-player/media-player";
 
 export default class MediaPlayer {
     private static adapter: WeakMap<MediaPlayer, IMediaPlayerAdapter> =
@@ -25,9 +25,8 @@ export default class MediaPlayer {
         );
 
         Array.from(buttons).forEach((button) =>
-            button.addEventListener(
-                "click",
-                this.processControllerEvent.bind(this, button, context)
+            button.addEventListener("click", (event) =>
+                this.processControllerEvent(button, context)
             )
         );
     }
@@ -38,10 +37,11 @@ export default class MediaPlayer {
      * @param context MediaPlayer
      */
     private static processControllerEvent(
-        controller: HTMLElement,
+        controller: Element,
         context: MediaPlayer
     ): void {
         const id = controller.getAttribute("data-media-player-video-id");
+        if (!id) return;
 
         context.load(id);
     }
@@ -53,7 +53,7 @@ export default class MediaPlayer {
      */
     protected static getAdapterByContext(
         context: MediaPlayer
-    ): IMediaPlayerAdapter {
+    ): IMediaPlayerAdapter | undefined {
         return this.adapter.get(context);
     }
 
@@ -63,6 +63,7 @@ export default class MediaPlayer {
      */
     public load(id: string): void {
         const adapter = MediaPlayer.getAdapterByContext(this);
+        if (!adapter) return;
 
         adapter.load(id);
     }
@@ -72,6 +73,7 @@ export default class MediaPlayer {
      */
     public play(): void {
         const adapter = MediaPlayer.getAdapterByContext(this);
+        if (!adapter) return;
 
         adapter.play();
     }
@@ -81,6 +83,7 @@ export default class MediaPlayer {
      */
     public pause(): void {
         const adapter = MediaPlayer.getAdapterByContext(this);
+        if (!adapter) return;
 
         adapter.pause();
     }

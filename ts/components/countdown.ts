@@ -2,34 +2,34 @@ import ICountdown, {
     CountdownStopTask,
     CountdownTickTask,
     ICountdownTick
-} from "../interfaces/countdown";
-import { elementExists } from "../utils/html";
+} from "Shared/ts/interfaces/countdown";
+import { elementExists } from "Shared/ts/utils/html";
 
 export default class Countdown {
     /**
      * Represents the overall container element for the countdown clock
      */
-    public container: Element;
+    public container: Element | null;
 
     /**
      * Represents the container element that will render the number of days
      */
-    public days: Element;
+    public days: Element | null;
 
     /**
      * Represents the container element that will render the number of hours
      */
-    public hours: Element;
+    public hours: Element | null;
 
     /**
      * Represents the container element that will render the number of minutes
      */
-    public minutes: Element;
+    public minutes: Element | null;
 
     /**
      * Represents the container element that will render the number of seconds
      */
-    public seconds: Element;
+    public seconds: Element | null;
 
     /**
      * Represents the attribute name for the number of days to output
@@ -81,7 +81,7 @@ export default class Countdown {
      * @param context Countdown
      * @returns ICountdown
      */
-    private static getContext(context: Countdown): ICountdown {
+    private static getContext(context: Countdown): ICountdown | undefined {
         return this.context.get(context);
     }
 
@@ -92,11 +92,11 @@ export default class Countdown {
      * @param time number
      */
     private static updateTimeAttributeByNode(
-        node: Element,
+        node: Element | null,
         attribute: string,
         time: number
     ): void {
-        if (elementExists(node)) {
+        if (node && elementExists(node)) {
             node.setAttribute(attribute, time.toString());
         }
     }
@@ -108,10 +108,10 @@ export default class Countdown {
      * @returns number
      */
     private static getTimeAttributeFromNode(
-        node: Element,
+        node: Element | null,
         attribute: string
     ): number {
-        return elementExists(node)
+        return node && elementExists(node)
             ? parseInt(node.getAttribute(attribute) ?? "0")
             : 0;
     }
@@ -220,6 +220,7 @@ export default class Countdown {
      */
     public start(): void {
         const context = Countdown.getContext(this);
+        if (!context) return;
 
         context.start();
 
@@ -234,6 +235,7 @@ export default class Countdown {
      */
     public tick(task: CountdownTickTask): void {
         const context = Countdown.getContext(this);
+        if (!context) return;
 
         context.tick((currentTime) => {
             Countdown.processTickByContext(currentTime, this);
@@ -247,6 +249,7 @@ export default class Countdown {
      */
     public stop(task: CountdownStopTask): void {
         const context = Countdown.getContext(this);
+        if (!context) return;
 
         context.stop(task);
     }

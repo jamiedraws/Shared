@@ -1,8 +1,8 @@
 import {
     CaptureElementEventName,
     CaptureElementTask
-} from "../interfaces/capture-element";
-import PubSub from "../patterns/pubsub";
+} from "Shared/ts/interfaces/capture-element";
+import PubSub from "Shared/ts/patterns/pubsub";
 
 export default class CaptureElement {
     /**
@@ -80,10 +80,10 @@ export default class CaptureElement {
     public subscribe(
         event: CaptureElementEventName,
         task: CaptureElementTask
-    ): string {
+    ): string | undefined {
         const pubsub = CaptureElement.pubsub.get(this);
 
-        return pubsub.subscribe(event, task);
+        return pubsub?.subscribe(event, task);
     }
 
     /**
@@ -91,10 +91,10 @@ export default class CaptureElement {
      * @param token string
      * @returns string
      */
-    public unsubscribe(token: string): string {
+    public unsubscribe(token: string): string | undefined {
         const pubsub = CaptureElement.pubsub.get(this);
 
-        return pubsub.unsubscribe(token);
+        return pubsub?.unsubscribe(token);
     }
 
     /**
@@ -103,6 +103,6 @@ export default class CaptureElement {
     public disconnect(): void {
         const observer = CaptureElement.observers.get(this);
 
-        observer.disconnect();
+        observer?.disconnect();
     }
 }

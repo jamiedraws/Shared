@@ -1,7 +1,7 @@
-import Carousel from "./carousel";
-import IResponsiveCarousel from "../interfaces/carousel/responsive-carousel";
-import { IResponsiveCarouselConfig } from "../interfaces/carousel/responsive-carousel";
-import { ICounterConfig } from "./counter";
+import Carousel from "Shared/ts/components/carousel";
+import IResponsiveCarousel from "Shared/ts/interfaces/carousel/responsive-carousel";
+import { IResponsiveCarouselConfig } from "Shared/ts/interfaces/carousel/responsive-carousel";
+import { ICounterConfig } from "Shared/ts/components/counter";
 
 export default class ResponsiveCarousel extends Carousel {
     /**
@@ -53,6 +53,8 @@ export default class ResponsiveCarousel extends Carousel {
     }
 
     public play() {
+        if (!this.container) return;
+
         const context = ResponsiveCarousel.getContext(
             this.container
         ) as IResponsiveCarousel;
@@ -61,10 +63,13 @@ export default class ResponsiveCarousel extends Carousel {
     }
 
     public next() {
+        if (!this.container) return;
+
         const context = ResponsiveCarousel.getContext(
             this.container
         ) as IResponsiveCarousel;
         const sum = context.countChildren();
+        if (sum === undefined) return;
 
         context.stepIndex += context.steps;
 
@@ -76,10 +81,13 @@ export default class ResponsiveCarousel extends Carousel {
     }
 
     public prev() {
+        if (!this.container) return;
+
         const context = ResponsiveCarousel.getContext(
             this.container
         ) as IResponsiveCarousel;
         const sum = context.countChildren();
+        if (sum === undefined) return;
 
         context.stepIndex -= context.steps;
 

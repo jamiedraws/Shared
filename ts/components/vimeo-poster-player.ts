@@ -1,13 +1,17 @@
 import Player from "@vimeo/player";
-import { IVimeoManagerPosterImageSpecification } from "../interfaces/vimeo-manager";
+import { IVimeoManagerPosterImageSpecification } from "Shared/ts/interfaces/vimeo-manager";
 import IVimeoPosterPlayerConfig, {
     IVimeoPosterPlayerInitializationResponseTask,
     IVimeoPosterPlayerPlaceholder
-} from "../interfaces/vimeo-poster-player";
-import { observer } from "../observers/intersection";
-import CaptureElement from "../utils/capture-element";
-import { createElement, elementExists, enumerateElements } from "../utils/html";
-import VimeoManager from "../utils/vimeo-manager";
+} from "Shared/ts/interfaces/vimeo-poster-player";
+import { observer } from "Shared/ts/observers/intersection";
+import CaptureElement from "Shared/ts/utils/capture-element";
+import {
+    createElement,
+    elementExists,
+    enumerateElements
+} from "Shared/ts/utils/html";
+import VimeoManager from "Shared/ts/utils/vimeo-manager";
 
 export default class VimeoPosterPlayer {
     /**
@@ -28,7 +32,7 @@ export default class VimeoPosterPlayer {
     /**
      * Represents a map of image specifications for the width, height and quality
      */
-    public imageSpecs: IVimeoManagerPosterImageSpecification;
+    public imageSpecs: IVimeoManagerPosterImageSpecification | undefined;
 
     /**
      * Represents a new VimeoManager instance
@@ -195,8 +199,10 @@ export default class VimeoPosterPlayer {
      */
     public createVimeoPoster(placeholder: Element): void {
         const id = VimeoPosterPlayer.vimeoManager.getIdByUrl(
-            placeholder.getAttribute(this.attribute)
+            placeholder.getAttribute(this.attribute) ?? ""
         );
+
+        if (!id) return;
 
         VimeoPosterPlayer.vimeoManager
             .generatePosterImage(id, this.imageSpecs)

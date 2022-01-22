@@ -1,12 +1,12 @@
-import { observer } from "shared/ts/observers/intersection";
-import { isString } from "shared/ts/utils/data";
-import { elementExists } from "shared/ts/utils/html";
+import { observer } from "Shared/ts/observers/intersection";
+import { isString } from "Shared/ts/utils/data";
+import { elementExists } from "Shared/ts/utils/html";
 
 export default class FingerPrintNav {
     /**
      * Represents the root fingerprint nav element
      */
-    public root: HTMLElement;
+    public root: HTMLElement | null;
 
     /**
      * Represents the CSS class name for the invisible state to the fingerprint nav element
@@ -19,7 +19,7 @@ export default class FingerPrintNav {
      * @param name string
      */
     constructor(
-        root: HTMLElement = document.querySelector(".fp-nav"),
+        root: HTMLElement | null = document.querySelector(".fp-nav"),
         name: string = "fp-nav--is-hidden"
     ) {
         this.root = root;
@@ -33,16 +33,13 @@ export default class FingerPrintNav {
      * @param outRange () => void
      * @param self FingerPrintNav
      */
-    private static updateWhenElementsInView<T extends () => void>(
-        selector: string,
-        inRange: T,
-        outRange: T,
-        self: FingerPrintNav
-    ): void {
+    private static updateWhenElementsInView<
+        T extends (self: FingerPrintNav) => void
+    >(selector: string, inRange: T, outRange: T, self: FingerPrintNav): void {
         if (isString(selector)) {
             observer(selector, {
-                inRange: inRange.bind(self),
-                outRange: outRange.bind(self),
+                inRange: (element) => inRange(self),
+                outRange: (element) => outRange(self),
                 unObserve: false
             });
         }
@@ -79,7 +76,7 @@ export default class FingerPrintNav {
      */
     public show(): void {
         if (elementExists(this.root)) {
-            this.root.classList.remove(this.name);
+            this.root?.classList.remove(this.name);
         }
     }
 
@@ -88,7 +85,7 @@ export default class FingerPrintNav {
      */
     public hide(): void {
         if (elementExists(this.root)) {
-            this.root.classList.add(this.name);
+            this.root?.classList.add(this.name);
         }
     }
 }

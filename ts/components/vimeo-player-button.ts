@@ -1,11 +1,11 @@
-import { IVimeoManagerPosterImageSpecification } from "../interfaces/vimeo-manager";
+import { IVimeoManagerPosterImageSpecification } from "Shared/ts/interfaces/vimeo-manager";
 import IVimeoPlayerButtonConfig, {
     VimeoPlayerButtonInitializationTask as VimeoPlayerButtonInitializationResponseTask
-} from "../interfaces/vimeo-player-button";
-import { IVimeoPosterPlayerPlaceholder } from "../interfaces/vimeo-poster-player";
-import { isString } from "../utils/data";
-import { elementExists } from "../utils/html";
-import VimeoPosterPlayer from "./vimeo-poster-player";
+} from "Shared/ts/interfaces/vimeo-player-button";
+import { IVimeoPosterPlayerPlaceholder } from "Shared/ts/interfaces/vimeo-poster-player";
+import { isString } from "Shared/ts/utils/data";
+import { elementExists } from "Shared/ts/utils/html";
+import VimeoPosterPlayer from "Shared/ts/components/vimeo-poster-player";
 
 export default class VimeoPlayerButton {
     /**
@@ -26,7 +26,7 @@ export default class VimeoPlayerButton {
     /**
      * Represents a map of image specifications for the width, height and quality
      */
-    public imageSpecs: IVimeoManagerPosterImageSpecification;
+    public imageSpecs: IVimeoManagerPosterImageSpecification | undefined;
 
     /**
      * Represets the relationship between the VimeoPlayerButton instance and the VimeoPosterPlayer instance
@@ -63,7 +63,7 @@ export default class VimeoPlayerButton {
      */
     private static getVimeoPosterPlayerByContext(
         context: VimeoPlayerButton
-    ): VimeoPosterPlayer {
+    ): VimeoPosterPlayer | undefined {
         return this.vimeoPosterPlayer.get(context);
     }
 
@@ -90,7 +90,7 @@ export default class VimeoPlayerButton {
                 `button[aria-controls="${response.placeholder.id}"]`
             );
 
-            if (elementExists(button)) {
+            if (button && elementExists(button)) {
                 this.controlVimeoByButton(button, response, context);
             } else {
                 console.warn({
@@ -114,6 +114,9 @@ export default class VimeoPlayerButton {
     ): void {
         const vimeoPosterPlayer =
             VimeoPlayerButton.getVimeoPosterPlayerByContext(context);
+
+        if (!vimeoPosterPlayer) return;
+
         let isPlaying = false;
 
         button.addEventListener("click", () => {
@@ -150,11 +153,16 @@ export default class VimeoPlayerButton {
         const vimeoPosterPlayer =
             VimeoPlayerButton.getVimeoPosterPlayerByContext(this);
 
+        if (!vimeoPosterPlayer) return;
+
         vimeoPosterPlayer.initializeOnCapture((response) => {
             VimeoPlayerButton.processVimeoPlayerPlaceholderResponse(
                 response,
                 this
             );
+
+            if (!task) return;
+
             task(response);
         });
     }
@@ -168,11 +176,15 @@ export default class VimeoPlayerButton {
         const vimeoPosterPlayer =
             VimeoPlayerButton.getVimeoPosterPlayerByContext(this);
 
+        if (!vimeoPosterPlayer) return;
+
         vimeoPosterPlayer.initialize((response) => {
             VimeoPlayerButton.processVimeoPlayerPlaceholderResponse(
                 response,
                 this
             );
+
+            if (!task) return;
 
             task(response);
         });

@@ -26,6 +26,8 @@ export default class InstagramMediaInstantTokenAdapter {
     > = new WeakMap();
 
     constructor(credentials: IInstantTokenCredentials) {
+        this.credentials = credentials;
+
         InstagramMediaInstantTokenAdapter.instantTokenManager.set(
             this,
             new InstantTokenManager(credentials)
@@ -34,26 +36,26 @@ export default class InstagramMediaInstantTokenAdapter {
 
     private static getInstantTokenManagerByContext(
         context: InstagramMediaInstantTokenAdapter
-    ): IInstantTokenManager {
+    ): IInstantTokenManager | undefined {
         return this.instantTokenManager.get(context);
     }
 
     private static getInstagramManagerByContext(
         context: InstagramMediaInstantTokenAdapter
-    ): IInstagramMediaManager {
+    ): IInstagramMediaManager | undefined {
         return this.instagramMediaManager.get(context);
     }
 
     private static getAccessTokenByContext(
         context: InstagramMediaInstantTokenAdapter
-    ): string {
+    ): string | undefined {
         return this.accessToken.get(context);
     }
 
     private static getInstagramManagerOrSetByContext(
         context: InstagramMediaInstantTokenAdapter
-    ): Promise<IInstagramMediaManager> {
-        return new Promise<IInstagramMediaManager>((resolve, reject) => {
+    ): Promise<IInstagramMediaManager | undefined> {
+        return new Promise<IInstagramMediaManager | undefined>((resolve, reject) => {
             const manager = this.getInstagramManagerByContext(context);
 
             if (manager) {
@@ -87,6 +89,16 @@ export default class InstagramMediaInstantTokenAdapter {
                         context
                     );
 
+                if (!instantToken) {
+                    reject(
+                        {
+                            message: `The Instant Token could not be obtained within the context`,
+                            context
+                        });
+
+                    return;
+                }
+
                 instantToken
                     .requestAccess()
                     .then((accessToken) => resolve(accessToken))
@@ -99,12 +111,21 @@ export default class InstagramMediaInstantTokenAdapter {
         return new Promise<IInstagramMedia[]>((resolve, reject) => {
             InstagramMediaInstantTokenAdapter.getInstagramManagerOrSetByContext(
                 this
-            ).then((manager) =>
+            ).then((manager) => {
+                if (!manager) {
+                    reject({
+                        message: `The Instagram Media Manager could not be obtained within the context`,
+                        context: this
+                    });
+
+                    return;
+                }
+
                 manager
                     .requestMedia()
                     .then((media) => resolve(media))
                     .catch((error) => reject(error))
-            );
+            });
         });
     }
 
@@ -112,12 +133,21 @@ export default class InstagramMediaInstantTokenAdapter {
         return new Promise<IInstagramMedia[]>((resolve, reject) => {
             InstagramMediaInstantTokenAdapter.getInstagramManagerOrSetByContext(
                 this
-            ).then((manager) =>
+            ).then((manager) => {
+                if (!manager) {
+                    reject({
+                        message: `The Instagram Media Manager could not be obtained within the context`,
+                        context: this
+                    });
+
+                    return;
+                }
+
                 manager
                     .requestImages()
                     .then((media) => resolve(media))
                     .catch((error) => reject(error))
-            );
+            });
         });
     }
 }

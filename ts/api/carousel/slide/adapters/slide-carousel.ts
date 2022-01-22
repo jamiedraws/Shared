@@ -1,14 +1,13 @@
-import Slide from "shared/ts/api/carousel/slide/slide";
-import { ISlide } from "shared/ts/interfaces/carousel/slide/slide";
-import ICarousel from "shared/ts/interfaces/carousel/carousel";
-import { elementExists } from "shared/ts/utils/html";
+import Slide from "Shared/ts/api/carousel/slide/slide";
+import { ISlide } from "Shared/ts/interfaces/carousel/slide/slide";
+import ICarousel from "Shared/ts/interfaces/carousel/carousel";
+import { elementExists } from "Shared/ts/utils/html";
 
 export default class SlideCarouselAdapter implements ICarousel {
-    public api: ISlide;
-
-    public container: Element;
-    public parent: Element;
-    public children: HTMLCollection;
+    public api: ISlide | undefined;
+    public container: Element | undefined;
+    public parent: Element | undefined;
+    public children: HTMLCollection | undefined;
 
     /**
      * An adapter Api that implements the ICarousel contract while communicating with the Slide Js Api
@@ -18,12 +17,12 @@ export default class SlideCarouselAdapter implements ICarousel {
         this.container = container;
         this.api = this.create(container);
 
-        this.parent = this.api.parent;
-        this.children = this.api.children;
+        this.parent = this.api?.parent;
+        this.children = this.api?.children;
     }
 
     public create(element: Element) {
-        let result: ISlide;
+        let result: ISlide | undefined;
 
         if (elementExists(element)) {
             const id = element.querySelector('[id][class*="slide__into"]');
@@ -35,7 +34,7 @@ export default class SlideCarouselAdapter implements ICarousel {
                         root: element
                     },
                     (api: ISlide) => {
-                        api.root.classList.add("slide--is-ready");
+                        api.root?.classList.add("slide--is-ready");
 
                         return api;
                     }
@@ -47,31 +46,31 @@ export default class SlideCarouselAdapter implements ICarousel {
     }
 
     public isAuto() {
-        return this.api.isAuto();
+        return this.api?.isAuto() ?? false;
     }
 
     public setAuto(status: boolean) {
-        this.api.setAuto(status);
+        this.api?.setAuto(status);
     }
 
     public play(persistCurrentIndex?: boolean) {
-        this.api.play(persistCurrentIndex);
+        this.api?.play(persistCurrentIndex);
     }
 
     public pause() {
-        this.api.pause();
+        this.api?.pause();
     }
 
     public prev() {
-        this.api.prev();
+        this.api?.prev();
     }
 
     public next() {
-        this.api.next();
+        this.api?.next();
     }
 
     public goto(index: number) {
-        this.api.goto(index);
+        this.api?.goto(index);
     }
 
     public watch(
@@ -81,38 +80,38 @@ export default class SlideCarouselAdapter implements ICarousel {
             nextIndex: number
         ) => void
     ) {
-        this.api.watch(task);
+        this.api?.watch(task);
     }
 
     public nextIndex() {
-        return this.api.nextIndex();
+        return this.api?.nextIndex();
     }
 
     public currentIndex() {
-        return this.api.currentIndex();
+        return this.api?.currentIndex();
     }
 
     public prevIndex() {
-        return this.api.prevIndex();
+        return this.api?.prevIndex();
     }
 
     public countChildren() {
-        return this.api.countChildren();
+        return this.api?.countChildren();
     }
 
     public getDelay() {
-        return this.api.getDelay();
+        return this.api?.getDelay();
     }
 
     public setDelay(delay: number) {
-        return this.api.setDelay(delay);
+        return this.api?.setDelay(delay);
     }
 
     public getIndex(index: number) {
-        return this.api.getIndex(index);
+        return this.api?.getIndex(index);
     }
 
     public setIndex(index: number) {
-        this.api.setIndex(index);
+        this.api?.setIndex(index);
     }
 }

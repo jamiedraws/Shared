@@ -1,14 +1,18 @@
 // https://www.npmjs.com/package/@types/youtube
 
 // interfaces
-import { YouTubePosterImageSize } from "../interfaces/youtube-manager";
+import { YouTubePosterImageSize } from "Shared/ts/interfaces/youtube-manager";
 
 // patterns
-import PubSub from "../patterns/pubsub";
+import PubSub from "Shared/ts/patterns/pubsub";
 
 // utils
-import { createElement, elementExists } from "./html";
-import { createAppendScript } from "./resource";
+import { createElement, elementExists } from "Shared/ts/utils/html";
+import { createAppendScript } from "Shared/ts/utils/resource";
+
+declare global {
+    function onYouTubeIframeAPIReady(): void;
+}
 
 export default class YouTubeManager {
     /**
@@ -198,7 +202,7 @@ export default class YouTubeManager {
      * @param iframe HTMLIFrameElement
      * @returns YT.Player
      */
-    public getPlayerByIframe(iframe: HTMLIFrameElement): YT.Player {
+    public getPlayerByIframe(iframe: HTMLIFrameElement): YT.Player | undefined {
         return YouTubeManager.playerRepo.get(iframe);
     }
 
@@ -207,7 +211,7 @@ export default class YouTubeManager {
      * @param player YT.Player
      * @returns HTMLIFrameElement
      */
-    public getIframeByPlayer(player: YT.Player): HTMLIFrameElement {
+    public getIframeByPlayer(player: YT.Player): HTMLIFrameElement | undefined {
         return YouTubeManager.iframeRepo.get(player);
     }
 
@@ -216,10 +220,10 @@ export default class YouTubeManager {
      * @param iframe HTMLElement
      * @returns string | null
      */
-    public getIdByIframe(iframe: HTMLElement): string | null {
+    public getIdByIframe(iframe: HTMLElement): string | undefined {
         return elementExists(iframe)
-            ? this.getIdByUrl(iframe.getAttribute("src"))
-            : null;
+            ? this.getIdByUrl(iframe.getAttribute("src") ?? "")
+            : undefined;
     }
 
     /**
@@ -227,15 +231,15 @@ export default class YouTubeManager {
      * @param url string
      * @returns string | null
      */
-    public getIdByUrl(url: string): string | null {
-        let id = null;
+    public getIdByUrl(url: string): string | undefined {
+        let id = undefined;
 
         const match = url.match(/youtube.com\/embed\/(?:[^?]*)/gi) ?? [];
 
         if (match.length === 1) {
             id = match
                 .shift()
-                .split(/youtube.com\/embed\//)
+                ?.split(/youtube.com\/embed\//)
                 .pop();
         }
 

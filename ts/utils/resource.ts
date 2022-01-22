@@ -1,4 +1,4 @@
-import * as Html from "shared/ts/utils/html";
+import * as Html from "Shared/ts/utils/html";
 
 interface ISource {
     src: string;

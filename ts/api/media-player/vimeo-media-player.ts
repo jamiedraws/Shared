@@ -1,5 +1,5 @@
-import VimeoManager from "../../utils/vimeo-manager";
-import IMediaPlayerAdapter from "../../interfaces/media-player/media-player";
+import VimeoManager from "Shared/ts/utils/vimeo-manager";
+import IMediaPlayerAdapter from "Shared/ts/interfaces/media-player/media-player";
 import Player from "@vimeo/player";
 
 export default class VimeoMediaPlayerAdapter implements IMediaPlayerAdapter {
@@ -8,12 +8,12 @@ export default class VimeoMediaPlayerAdapter implements IMediaPlayerAdapter {
     /**
      * Represents the Vimeo iframe
      */
-    public iframe: HTMLIFrameElement;
+    public iframe: HTMLIFrameElement | null;
 
     /**
      * Represents the Vimeo Player
      */
-    public player: Player;
+    public player: Player | null = null;
 
     /**
      * This adapter communicates between the Media Player class and the Vimeo Manager class and enables the methods to load a new video, play a current video and pause a current video through Vimeo
@@ -23,18 +23,21 @@ export default class VimeoMediaPlayerAdapter implements IMediaPlayerAdapter {
 
         this.root = root;
         this.iframe = root.querySelector("iframe");
-        this.player = vm.createPlayerByIframe(this.iframe);
+
+        if (this.iframe) {
+            this.player = vm.createPlayerByIframe(this.iframe);
+        }
     }
 
     public play(): void {
-        this.player.play();
+        this.player?.play();
     }
 
     public pause(): void {
-        this.player.pause();
+        this.player?.pause();
     }
 
     public load(id: string): void {
-        this.player.loadVideo(parseInt(id));
+        this.player?.loadVideo(parseInt(id));
     }
 }

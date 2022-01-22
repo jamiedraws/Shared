@@ -1,5 +1,5 @@
 import Player from "@vimeo/player";
-import { IVimeoManagerPosterImageSpecification } from "./vimeo-manager";
+import { IVimeoManagerPosterImageSpecification } from "Shared/ts/interfaces/vimeo-manager";
 
 export default interface IVimeoPosterPlayerConfig {
     /**

@@ -1,4 +1,4 @@
-import { IInstagramMedia } from "../interfaces/instagram-media-manager";
+import { IInstagramMedia } from "Shared/ts/interfaces/instagram-media-manager";
 
 export default class InstagramMediaManager {
     private static endpoint: string =

@@ -1,4 +1,4 @@
-import FocusManager from "shared/ts/utils/focus-manager";
+import FocusManager from "Shared/ts/utils/focus-manager";
 
 export default class FocusTrap extends FocusManager {
     /**
@@ -10,7 +10,7 @@ export default class FocusTrap extends FocusManager {
      * Extends the base functionality of the FocusManager interface by providing support to enable/disable focus trap navigation.
      * @param root HTMLElement
      */
-    constructor(root: HTMLElement = document.querySelector("body")) {
+    constructor(root: HTMLElement | null = document.querySelector("body")) {
         super(root);
 
         FocusTrap.setRootBoundaries(this);
@@ -24,35 +24,41 @@ export default class FocusTrap extends FocusManager {
     private static getRootBoundaryElement(
         id: string,
         context: FocusTrap
-    ): HTMLElement {
+    ): HTMLElement | null {
         const root = this.getRoot(context);
 
-        return root.querySelector(`[data-root-boundary="${id}"]`);
+        return root ? root.querySelector(`[data-root-boundary="${id}"]`) : null;
     }
 
     /**
      * Manages the focus event listeners based on a switch. The switch defaults to true meaning, the first and last focusable elements will add an event listener. Switching to false will remove the event listeners from the first and last focusable elements.
      * @param self FocusTrap
-     * @param eventSwitch boolean
+     * @param eventOn boolean
      */
     private static manageFocusEvents(
         context: FocusTrap,
-        eventSwitch: boolean = true
+        eventOn: boolean = true
     ) {
         this.context = context;
 
-        const eventListener = eventSwitch
-            ? "addEventListener"
-            : "removeEventListener";
+        const first = this.getRootBoundaryElement("first", context);
+        const last = this.getRootBoundaryElement("last", context);
 
-        this.getRootBoundaryElement("first", context)[eventListener](
-            "focus",
-            this.handleFirstFocusEvent
-        );
-        this.getRootBoundaryElement("last", context)[eventListener](
-            "focus",
-            this.handleLastFocusEvent
-        );
+        if (first && eventOn) {
+            first.addEventListener("focus", this.handleFirstFocusEvent);
+        }
+
+        if (last && eventOn) {
+            last.addEventListener("focus", this.handleLastFocusEvent);
+        }
+
+        if (first && !eventOn) {
+            first.removeEventListener("focus", this.handleFirstFocusEvent);
+        }
+
+        if (last && !eventOn) {
+            last.removeEventListener("focus", this.handleLastFocusEvent);
+        }
     }
 
     /**
@@ -82,14 +88,16 @@ export default class FocusTrap extends FocusManager {
     private static setRootBoundaries(context: FocusTrap): void {
         const root = FocusTrap.root.get(context);
 
-        root.insertAdjacentElement(
-            "afterbegin",
-            this.createBoundaryElement("first")
-        );
-        root.insertAdjacentElement(
-            "beforeend",
-            this.createBoundaryElement("last")
-        );
+        if (root) {
+            root.insertAdjacentElement(
+                "afterbegin",
+                this.createBoundaryElement("first")
+            );
+            root.insertAdjacentElement(
+                "beforeend",
+                this.createBoundaryElement("last")
+            );
+        }
     }
 
     /**

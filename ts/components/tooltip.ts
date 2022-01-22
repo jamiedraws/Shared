@@ -1,9 +1,9 @@
-import { listen } from "shared/ts/observers/event";
-import { HTMLList } from "shared/ts/utils/html";
+import { listen } from "Shared/ts/observers/event";
+import { enumerateElements, HTMLList } from "Shared/ts/utils/html";
 
 export default class ToolTip {
     // Represents the current target element
-    public element: HTMLElement;
+    public element: Element;
 
     // Represents the list of observable elements
     public elements: HTMLList;
@@ -22,6 +22,7 @@ export default class ToolTip {
     ) {
         this.name = name;
         this.elements = elements;
+        this.element = enumerateElements(this.elements)[0];
 
         ToolTip.setVisibleEvents(this);
         ToolTip.setInvisibleEvents(this);

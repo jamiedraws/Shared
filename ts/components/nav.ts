@@ -1,25 +1,25 @@
-import { elementExists, enumerateElements } from "shared/ts/utils/html";
+import { elementExists, enumerateElements } from "Shared/ts/utils/html";
 
 export default class Nav {
     /**
      * Represents the root element by ".nav"
      */
-    public root: HTMLElement;
+    public root: HTMLElement | null;
 
     /**
      * Represents the label element by ".nav__label"
      */
-    public label: HTMLElement;
+    public label: HTMLElement | null | undefined;
 
     /**
      * Represents the underlay element by ".nav__underlay"
      */
-    public underlay: HTMLElement;
+    public underlay: HTMLElement | null | undefined;
 
     /**
      * Represents an array of ".nav__link" elements
      */
-    public links: Element[];
+    public links: Element[] = [];
 
     /**
      * Represents the modifier for a selected nav label element
@@ -38,26 +38,27 @@ export default class Nav {
     constructor(id: string) {
         this.root = document.getElementById(id);
 
-        if (elementExists(this.root)) {
-            this.label = this.root.querySelector(".nav__label");
-            this.underlay = this.root.querySelector(".nav__underlay");
+        this.label = this.root?.querySelector(".nav__label");
+        this.underlay = this.root?.querySelector(".nav__underlay");
+
+        if (this.root) {
             this.links = enumerateElements(
                 this.root.querySelectorAll(".nav__link")
             );
-
-            this.processEvents();
         }
+
+        this.processEvents();
     }
 
     /**
      * Registers an event listener on the ".nav__label" to toggle the nav, ".nav__underlay" to close the nav and each ".nav__link" to close the nav.
      */
     public processEvents(): void {
-        if (elementExists(this.label)) {
+        if (this.label && elementExists(this.label)) {
             this.label.addEventListener("click", this.toggle.bind(this));
         }
 
-        if (elementExists(this.underlay)) {
+        if (this.underlay && elementExists(this.underlay)) {
             this.underlay.addEventListener("click", this.close.bind(this));
         }
 
@@ -70,9 +71,9 @@ export default class Nav {
      * Toggles the ".nav__label--is-selected" class on the label element between the Close() method and the Open() method.
      */
     public toggle(): void {
-        this.root.classList.toggle(Nav.RootIsSelected);
+        this.root?.classList.toggle(Nav.RootIsSelected);
 
-        if (elementExists(this.label)) {
+        if (this.label && elementExists(this.label)) {
             this.label.classList.toggle(Nav.labelIsSelected);
         }
     }
@@ -81,9 +82,9 @@ export default class Nav {
      * Removes the ".nav__label--is-selected" class from the label element.
      */
     public close(): void {
-        this.root.classList.remove(Nav.RootIsSelected);
+        this.root?.classList.remove(Nav.RootIsSelected);
 
-        if (elementExists(this.label)) {
+        if (this.label && elementExists(this.label)) {
             this.label.classList.remove(Nav.labelIsSelected);
         }
     }
@@ -92,9 +93,9 @@ export default class Nav {
      * Adds the ".nav__label--is-selected" class to the label element.
      */
     public open(): void {
-        this.root.classList.add(Nav.RootIsSelected);
+        this.root?.classList.add(Nav.RootIsSelected);
 
-        if (elementExists(this.label)) {
+        if (this.label && elementExists(this.label)) {
             this.label.classList.add(Nav.labelIsSelected);
         }
     }

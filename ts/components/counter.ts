@@ -1,4 +1,4 @@
-import { isNumber, isObject, isFunction } from "shared/ts/utils/data";
+import { isNumber, isObject, isFunction } from "Shared/ts/utils/data";
 
 /**
  * The config interface for the Counter class extends the capability for a duration number and easing function to control the animation as well as an after step callback function that provides the current step number.
@@ -27,8 +27,8 @@ export class Counter {
     private startTimeStamp: number = 0;
 
     constructor(start?: number, end?: number, config?: ICounterConfig) {
-        Counter.setRange(start, end, this);
-        Counter.setConfig(config, this);
+        Counter.setRange(start as number, end as number, this);
+        Counter.setConfig(config ?? {}, this);
     }
 
     /**
@@ -80,19 +80,21 @@ export class Counter {
         config: ICounterConfig,
         startTimeStamp: number
     ): void {
-        const step = (timestamp: number) => {
+        const step = (timestamp: number): void => {
             if (!startTimeStamp) {
                 startTimeStamp = timestamp;
             }
 
-            const progress = config.easing(
-                Math.min((timestamp - startTimeStamp) / config.duration, 1)
-            );
+            if (config.easing && config.afterStep && config.duration) {
+                const progress = config.easing(
+                    Math.min((timestamp - startTimeStamp) / config.duration, 1)
+                );
 
-            config.afterStep(Math.floor(progress * (end - start) + start));
+                config.afterStep(Math.floor(progress * (end - start) + start));
 
-            if (progress < 1) {
-                requestAnimationFrame(step);
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                }
             }
         };
 

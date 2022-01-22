@@ -1,20 +1,20 @@
-import { enumerateElements } from "../utils/html";
+import { enumerateElements } from "Shared/ts/utils/html";
 
 export default class Accordion {
     /**
      * Represents the root element containing both controllers and containers
      */
-    public root: Element;
+    public root: Element | null;
 
     /**
      * Represents an array of all button elements that would triger the container to expand/collapse
      */
-    public controllers: HTMLButtonElement[];
+    public controllers: HTMLButtonElement[] = [];
 
     /**
      * Represents an array of all container elements that are controllable by controllers
      */
-    public containers: HTMLElement[];
+    public containers: HTMLElement[] = [];
 
     /**
      * Accordion creates a relationship between a set of controls, referenced as "controllers", and a set of regions, referenced as "containers". Interacting with a control in the Accordion will communicate with it's related container and manage it's attributes.
@@ -23,13 +23,15 @@ export default class Accordion {
     constructor(root?: Element) {
         this.root = root ?? document.querySelector(".accordion");
 
-        this.controllers = enumerateElements(
-            this.root.querySelectorAll(".accordion__button")
-        ) as HTMLButtonElement[];
+        if (this.root) {
+            this.controllers = enumerateElements(
+                this.root.querySelectorAll(".accordion__button")
+            ) as HTMLButtonElement[];
 
-        this.containers = enumerateElements(
-            this.root.querySelectorAll(".accordion__section")
-        ) as HTMLElement[];
+            this.containers = enumerateElements(
+                this.root.querySelectorAll(".accordion__section")
+            ) as HTMLElement[];
+        }
 
         Accordion.initialize(this);
     }
@@ -230,7 +232,7 @@ export default class Accordion {
      * @param context Accordion
      */
     private static activateRoot(context: Accordion): void {
-        context.root.classList.add("accordion--is-focused");
+        context.root?.classList.add("accordion--is-focused");
     }
 
     /**
@@ -238,7 +240,7 @@ export default class Accordion {
      * @param context Accordion
      */
     private static deactivateRoot(context: Accordion): void {
-        context.root.classList.remove("accordion--is-focused");
+        context.root?.classList.remove("accordion--is-focused");
     }
 
     /**
@@ -252,6 +254,7 @@ export default class Accordion {
     ): void {
         if (context.isController(controller)) {
             const container = context.getContainerByController(controller);
+            if (!container) return;
 
             if (context.isContainer(container)) {
                 controller.setAttribute("aria-expanded", "true");
@@ -276,6 +279,7 @@ export default class Accordion {
     ): void {
         if (context.isController(controller)) {
             const container = context.getContainerByController(controller);
+            if (!container) return;
 
             if (context.isContainer(container)) {
                 controller.setAttribute("aria-expanded", "false");
@@ -356,7 +360,7 @@ export default class Accordion {
 
         return manyContainers
             ? manyContainers
-            : this.root.hasAttribute("data-accordion-toggle");
+            : this.root?.hasAttribute("data-accordion-toggle") ?? false;
     }
 
     /**
@@ -364,7 +368,9 @@ export default class Accordion {
      * @returns boolean
      */
     public allowManyContainers(): boolean {
-        return this.root.hasAttribute("data-accordion-many-containers");
+        return (
+            this.root?.hasAttribute("data-accordion-many-containers") ?? false
+        );
     }
 
     /**
@@ -374,7 +380,7 @@ export default class Accordion {
      */
     public getContainerByController(
         controller: HTMLButtonElement
-    ): HTMLElement {
+    ): HTMLElement | undefined {
         return this.containers.find(
             (container) =>
                 container.id === controller.getAttribute("aria-controls")

@@ -1,5 +1,5 @@
-import { isFunction } from "shared/ts/utils/data";
-import { enumerateElements } from "shared/ts/utils/html";
+import { isFunction } from "Shared/ts/utils/data";
+import { enumerateElements } from "Shared/ts/utils/html";
 
 /**
  * IntersectionObserverConfig allows an optional inRange callback function to execute when an element intersects inside the viewport, allows an optional outRange callback function to execute when an element intersects outside the viewport, an optional boolean to unobserve elements and an optional configuration object to customize the Intersection Observer API behavior.
@@ -121,8 +121,10 @@ const observeByApi = (
 export const observer = (
     selector: string = "[data-observe]",
     config?: IntersectionObserverConfig
-) => {
+): void => {
     let loadItems = enumerateElements(document.querySelectorAll(selector));
+
+    if (!config) return;
 
     if ("IntersectionObserver" in window) {
         observeByApi(loadItems, config);
