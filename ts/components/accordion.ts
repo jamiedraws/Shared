@@ -1,4 +1,4 @@
-import { enumerateElements } from "Shared/ts/utils/html";
+import "element-closest/browser";
 
 export default class Accordion {
     /**
@@ -24,12 +24,16 @@ export default class Accordion {
         this.root = root ?? document.querySelector(".accordion");
 
         if (this.root) {
-            this.controllers = enumerateElements(
+            this.controllers = Array.from(
                 this.root.querySelectorAll(".accordion__button")
+            ).filter(
+                (button) => button.closest(".accordion") === this.root
             ) as HTMLButtonElement[];
 
-            this.containers = enumerateElements(
+            this.containers = Array.from(
                 this.root.querySelectorAll(".accordion__section")
+            ).filter(
+                (container) => container.closest(".accordion") === this.root
             ) as HTMLElement[];
         }
 
@@ -123,12 +127,12 @@ export default class Accordion {
         context: Accordion
     ) {
         return (event: KeyboardEvent) => {
-            if (Accordion.isKeyup(event)) {
+            if (Accordion.isKeyup(event) || Accordion.isKeyLeft(event)) {
                 event.preventDefault();
                 Accordion.getPrevController(controller, context).focus();
             }
 
-            if (Accordion.isKeydown(event)) {
+            if (Accordion.isKeydown(event) || Accordion.isKeyRight(event)) {
                 event.preventDefault();
                 Accordion.getNextController(controller, context).focus();
             }
@@ -158,6 +162,28 @@ export default class Accordion {
             key === "arrowup" ||
             key === "up"
         );
+    }
+
+    /**
+     * Determines if the key pressed was the left key
+     * @param event KeyboardEvent
+     * @returns boolean
+     */
+    private static isKeyLeft(event: KeyboardEvent): boolean {
+        const key = event.key.toLowerCase();
+
+        return key === "arrowleft" || key === "left";
+    }
+
+    /**
+     * Determines if the key pressed was the right key
+     * @param event KeyboardEvent
+     * @returns boolean
+     */
+    private static isKeyRight(event: KeyboardEvent): boolean {
+        const key = event.key.toLowerCase();
+
+        return key === "arrowright" || key === "right";
     }
 
     /**

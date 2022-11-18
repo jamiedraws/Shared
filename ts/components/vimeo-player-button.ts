@@ -128,6 +128,8 @@ export default class VimeoPlayerButton {
         response.player.on("playing", () => {
             isPlaying = true;
 
+            vimeoPosterPlayer.hidePoster(response.placeholder);
+
             button.setAttribute("aria-label", "Pause video");
             button.classList.add(`${context.namespace}__play--is-playing`);
         });

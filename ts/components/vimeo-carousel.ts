@@ -391,7 +391,9 @@ export default class VimeoCarousel extends Carousel {
         if (element.hasAttribute("src")) {
             const src = element.getAttribute("src");
 
-            repo.isAutoplay = src?.match("background=1") ? true : false;
+            repo.isAutoplay = src?.match(/(autoplay|background)=1/g)
+                ? true
+                : false;
             return;
         }
 

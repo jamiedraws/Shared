@@ -89,10 +89,20 @@ export default class ResponsiveCarousel extends Carousel {
         const sum = context.countChildren();
         if (sum === undefined) return;
 
+        if (context.stepIndex === 0) {
+            context.stepIndex = sum - context.steps;
+
+            context.goto(context.stepIndex);
+            return;
+        }
+
         context.stepIndex -= context.steps;
 
         if (context.stepIndex < 0) {
-            context.stepIndex = sum - context.steps;
+            context.stepIndex = 0;
+
+            context.goto(context.stepIndex);
+            return;
         }
 
         context.goto(context.stepIndex);

@@ -1,4 +1,5 @@
-import { elementExists, enumerateElements } from "Shared/ts/utils/html";
+import { elementExists } from "Shared/ts/utils/html";
+import FocusNavigator from "Shared/ts/utils/focus-navigator";
 
 export default class Nav {
     /**
@@ -41,10 +42,25 @@ export default class Nav {
         this.label = this.root?.querySelector(".nav__label");
         this.underlay = this.root?.querySelector(".nav__underlay");
 
-        if (this.root) {
-            this.links = enumerateElements(
-                this.root.querySelectorAll(".nav__link")
+        const root = this.root;
+
+        const focusNavigator = new FocusNavigator(this.root);
+
+        focusNavigator.updateElements();
+        focusNavigator.on();
+
+        if (root) {
+            this.links = Array.from(
+                root.querySelectorAll("a.nav__link")
+            ).filter(
+                (link) =>
+                    !link.hasAttribute("aria-haspopup") &&
+                    !link.hasAttribute("aria-expanded")
             );
+
+            focusNavigator.considerElements = () => {
+                return Array.from(root.querySelectorAll(".nav__link"));
+            };
         }
 
         this.processEvents();

@@ -8,6 +8,7 @@ import {
     enumerateElements,
     elementExists
 } from "Shared/ts/utils/html";
+import { createEvent } from "Shared/ts/observers/event";
 
 enableInertSupport();
 
@@ -73,6 +74,12 @@ export default class Modal {
             Modal.processAriaAttributes(template.container, config);
             Modal.manageModalEvents(this);
         }
+    }
+
+    protected static getTemplateByContext(
+        context: Modal
+    ): IModalHTMLTemplate | undefined {
+        return this.template.get(context);
     }
 
     /**
@@ -152,7 +159,8 @@ export default class Modal {
      */
     private static createContainer(
         id: string,
-        role: string = "dialog"
+        role: string = "dialog",
+        templateModifier: string
     ): HTMLElement {
         return createElement("div", {
             role: role,
@@ -160,7 +168,7 @@ export default class Modal {
             tabindex: "-1",
             "aria-modal": "true",
             "data-modal-dialog-parent-id": id,
-            class: "modal-dialog modal-dialog--container modal-dialog--is-hidden"
+            class: `modal-dialog modal-dialog--container modal-dialog--is-hidden modal-dialog--${id} modal-dialog--${templateModifier}`
         });
     }
 
@@ -244,7 +252,11 @@ export default class Modal {
         config: IModalConfig
     ): IModalHTMLTemplate {
         const id = config.id ?? root.id;
-        const container = this.createContainer(id, config.role);
+        const container = this.createContainer(
+            id,
+            config.role,
+            config.templateModifier ?? "base"
+        );
         const viewport = this.createViewport();
         const content = this.createContent();
         const stage = this.createStage();
@@ -393,7 +405,7 @@ export default class Modal {
         actor: HTMLElement
     ): Modal | undefined {
         return this.context.get(
-            actor.getAttribute("data-modal-dialog-parent-id") ?? ""
+            actor?.getAttribute("data-modal-dialog-parent-id") ?? ""
         );
     }
 
@@ -428,7 +440,7 @@ export default class Modal {
         key: string,
         event: KeyboardEvent
     ): void {
-        if (event.key.toLowerCase() === key.toLowerCase()) {
+        if (event.key?.toLowerCase() === key.toLowerCase()) {
             const context = this.getContextByActiveRoot();
             if (!context) return;
 
@@ -441,11 +453,15 @@ export default class Modal {
      */
     private static setGlobalEvents() {
         this.body.addEventListener("click", (event) => {
-            const actor = event.target as HTMLElement;
+            const target = event.target as HTMLElement;
+            const actor =
+                target.closest<HTMLElement>("[data-modal-dialog-id]") ?? target;
+
             const action = Modal.getActionByActor(actor);
 
             switch (action) {
                 case "open":
+                    event.preventDefault();
                     Modal.handleOpenEvent(actor);
                     break;
                 case "close":
@@ -477,18 +493,22 @@ export default class Modal {
 
         const firstElement = focus.firstElement() as HTMLElement;
 
+        const backdropEvent = createEvent(window, "modal::backdrop");
+
         root.addEventListener("click", (event: MouseEvent) => {
             const target = event.target as HTMLElement;
             const stage = target.closest(".modal-dialog__stage");
 
             if (stage !== template.stage) {
                 Modal.handleCloseState(context);
+                dispatchEvent(backdropEvent);
             }
         });
 
-        root.addEventListener("blur", (event: FocusEvent) => {
-            firstElement.focus();
-        });
+        // NOTE: When form controls are introduced, this creates an accessibility issue as focus continously is set back on the 1st element.
+        // root.addEventListener("blur", (event: FocusEvent) => {
+        //     firstElement.focus();
+        // });
     }
 
     /**
@@ -532,7 +552,8 @@ export default class Modal {
             firstElement.focus();
 
             const openActor = actor ?? (document.activeElement as HTMLElement);
-            Modal.updateOpenActor(context, openActor);
+
+            Modal.actor.set(context, openActor);
         });
     }
 
@@ -555,16 +576,17 @@ export default class Modal {
         this.makeRootInvisible(root);
 
         const modal = this.getContextByActorParentId(openActor);
-        if (!modal) return;
 
-        this.makeActive(modal);
+        if (modal) {
+            this.makeActive(modal);
+        }
 
         this.updateFocusStateByActor(openActor);
 
         this.updateScrollBody();
         this.manageInertState();
 
-        openActor.focus();
+        openActor?.focus();
     }
 
     /**
@@ -661,7 +683,7 @@ export default class Modal {
      * Opens the modal
      */
     public open(): void {
-        Modal.handleOpenState(this);
+        Modal.handleOpenState(this, document.activeElement as HTMLElement);
     }
 
     /**

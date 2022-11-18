@@ -425,7 +425,9 @@ export default class Carousel {
     /**
      * Enables the carousel to activate thumbnail controls through user-interface components
      */
-    public enableThumbnailControls(): void {
+    public enableThumbnailControls(
+        eventCallback?: (event: Event) => void
+    ): void {
         if (!this.container) return;
 
         const thumbnailButtons = enumerateElements(
@@ -443,6 +445,8 @@ export default class Carousel {
                     currentButton,
                     thumbnailButtons
                 );
+
+                if (typeof eventCallback === "function") eventCallback(event);
             });
         });
 
@@ -455,7 +459,7 @@ export default class Carousel {
             Carousel.updateThumbnailNavigationMarkerByIndex(
                 currentIndex,
                 context
-            )
+            );
         });
     }
 }

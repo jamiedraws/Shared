@@ -40,7 +40,12 @@ export default class FadeCarousel extends Carousel {
         const children = context.countChildren();
 
         context.watch((currentIndex) => {
-            if (context.parent === undefined || context.children === undefined || children === undefined) return;
+            if (
+                context.parent === undefined ||
+                context.children === undefined ||
+                children === undefined
+            )
+                return;
 
             FadeCarousel.push(context, "rotation");
 
