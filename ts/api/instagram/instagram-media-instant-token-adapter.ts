@@ -55,24 +55,26 @@ export default class InstagramMediaInstantTokenAdapter {
     private static getInstagramManagerOrSetByContext(
         context: InstagramMediaInstantTokenAdapter
     ): Promise<IInstagramMediaManager | undefined> {
-        return new Promise<IInstagramMediaManager | undefined>((resolve, reject) => {
-            const manager = this.getInstagramManagerByContext(context);
+        return new Promise<IInstagramMediaManager | undefined>(
+            (resolve, reject) => {
+                const manager = this.getInstagramManagerByContext(context);
 
-            if (manager) {
-                resolve(manager);
-            } else {
-                this.getAccessTokenOrRequest(context)
-                    .then((token) => {
-                        this.instagramMediaManager.set(
-                            context,
-                            new InstagramMediaManager(token)
-                        );
+                if (manager) {
+                    resolve(manager);
+                } else {
+                    this.getAccessTokenOrRequest(context)
+                        .then((token) => {
+                            this.instagramMediaManager.set(
+                                context,
+                                new InstagramMediaManager(token)
+                            );
 
-                        resolve(this.instagramMediaManager.get(context));
-                    })
-                    .catch((error) => reject(error));
+                            resolve(this.instagramMediaManager.get(context));
+                        })
+                        .catch((error) => reject(error));
+                }
             }
-        });
+        );
     }
 
     private static getAccessTokenOrRequest(
@@ -90,11 +92,10 @@ export default class InstagramMediaInstantTokenAdapter {
                     );
 
                 if (!instantToken) {
-                    reject(
-                        {
-                            message: `The Instant Token could not be obtained within the context`,
-                            context
-                        });
+                    reject({
+                        message: `The Instant Token could not be obtained within the context`,
+                        context
+                    });
 
                     return;
                 }
@@ -124,7 +125,7 @@ export default class InstagramMediaInstantTokenAdapter {
                 manager
                     .requestMedia()
                     .then((media) => resolve(media))
-                    .catch((error) => reject(error))
+                    .catch((error) => reject(error));
             });
         });
     }
@@ -146,7 +147,7 @@ export default class InstagramMediaInstantTokenAdapter {
                 manager
                     .requestImages()
                     .then((media) => resolve(media))
-                    .catch((error) => reject(error))
+                    .catch((error) => reject(error));
             });
         });
     }

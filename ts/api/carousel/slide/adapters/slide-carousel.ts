@@ -39,6 +39,11 @@ export default class SlideCarouselAdapter implements ICarousel {
                         return api;
                     }
                 );
+            } else {
+                console.error({
+                    message: `An element requires the class name 'slide__into' and requires an id attribute. No element was found from the container element context.`,
+                    element
+                });
             }
         }
 
