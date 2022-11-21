@@ -21,7 +21,11 @@ export default class InstagramMediaManager {
         return new Promise<IInstagramMedia[]>((resolve, reject) => {
             this.requestMedia()
                 .then((media) => {
-                    resolve(media.filter((m) => m.media_url));
+                    resolve(
+                        media.filter(
+                            (m) => m.media_type.toLowerCase() === "image"
+                        )
+                    );
                 })
                 .catch((error) => reject(error));
         });

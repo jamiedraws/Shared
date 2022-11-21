@@ -105,4 +105,18 @@ export default class CaptureElement {
 
         observer?.disconnect();
     }
+
+    /**
+     * Opens the connection to the element's MutationObserver
+     */
+    public connect(): void {
+        const observer = CaptureElement.observers.get(this);
+
+        observer?.observe(this.element, {
+            subtree: true,
+            childList: true,
+            attributes: true,
+            characterData: true
+        });
+    }
 }

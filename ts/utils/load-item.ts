@@ -66,9 +66,9 @@ export default class LoadItem {
         this.onerrorname = config?.onerrorname ?? "onerror";
 
         this.attributes =
-            JSON.parse(placeholder.getAttribute("data-attr") ?? "") ?? {};
+            JSON.parse(placeholder.getAttribute("data-attr") ?? "{}") ?? {};
         this.tagsGroup =
-            JSON.parse(placeholder.getAttribute("data-tag") ?? "") ?? {};
+            JSON.parse(placeholder.getAttribute("data-tag") ?? "{}") ?? {};
 
         if (!LoadItem.isRendered(this)) {
             LoadItem.initalize(this);
@@ -239,7 +239,7 @@ export default class LoadItem {
                 (control) => control.name === "load"
             );
 
-            response?.task();
+            response?.task(element);
         }
     }
 

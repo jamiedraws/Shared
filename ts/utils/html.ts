@@ -9,6 +9,8 @@ export type HTMLList =
 
 export type HTMLItem = HTMLElement | Node;
 
+const div: HTMLElement = document.createElement("div");
+
 /**
  * createElement takes a string tag name along with an optional object of attributes and returns a new HTMLElement.
  * @param tag string
@@ -55,6 +57,19 @@ export const renderTemplate = (template: string): DocumentFragment => {
 };
 
 /**
+ * Takes a document fragment and converts it into an HTML element. The Element is returned.
+ * @param fragment DocumentFragment
+ * @returns Element | null
+ */
+export const convertFragmentToHTMLElement = (
+    fragment: DocumentFragment
+): Element | null => {
+    div.appendChild(fragment);
+
+    return div.lastElementChild;
+};
+
+/**
  * appendElement takes an HTMLElement and appends it to the document body. The same element is then returned.
  * @param element HTMLElement
  * @return HTMLElement
@@ -83,4 +98,29 @@ export const enumerateElements = (elements: HTMLList): Element[] => {
     let ar = [].slice.call(elements);
 
     return ar;
+};
+
+/**
+ * Attempts to convert a JSON string value of an HTML attribute into JSON format.
+ * @param element Element | null
+ * @param attribute string
+ * @returns JSON object
+ */
+export const getJSONByElementAttribute = <T>(
+    element: Element | null,
+    attribute: string
+): T => {
+    let json = {} as any;
+
+    if (!element || !attribute) return json;
+
+    try {
+        const value = element.getAttribute(attribute);
+        json = value !== null ? JSON.parse(value) : json;
+    } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
+        console.debug(message);
+    }
+
+    return json;
 };
