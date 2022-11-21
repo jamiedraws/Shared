@@ -61,12 +61,12 @@ export default class PubSub {
 
         const events = PubSub.events.get(this);
 
-        if (events && id) {
+        if (events && id !== undefined) {
             if (!events[event]) {
                 events[event] = [];
             }
 
-            if (id) {
+            if (id !== undefined) {
                 PubSub.id.set(this, (id += 1));
 
                 token = id.toString();
