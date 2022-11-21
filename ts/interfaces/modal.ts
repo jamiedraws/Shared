@@ -49,4 +49,13 @@ export default interface IModalConfig {
      * Represents the label of the modal directly.
      */
     ariaLabel?: string;
+    /**
+     * Represents the class list names that will be assigned to the modal container
+     */
+    templateModifier?: string | null;
+}
+
+export interface IModal {
+    open: () => void;
+    close: () => void;
 }

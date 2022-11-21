@@ -20,7 +20,7 @@ export interface ILoadItemConfig {
     onerrorname?: string;
 }
 
-export type LoadItemTask = () => void;
+export type LoadItemTask = (element?: HTMLElement | undefined) => void;
 
 export interface ILoadItemController {
     name: string;
