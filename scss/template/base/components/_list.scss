@@ -1,40 +1,12 @@
 $select: ".list" !default;
 $breakpoint: 1000px !default;
 
-@mixin new {
+// abstracts
+@use "./../abstracts/list";
+
+@mixin base {
     #{$select} {
-        @include structure;
-
-        @content;
-    }
-}
-
-@mixin structure($offset: 1.5rem, $gap: 1rem) {
-    margin-left: #{$offset};
-    list-style: none;
-
-    > * {
-        @supports (display: flex) {
-            display: flex;
-        }
-
-        break-inside: avoid;
-        padding: 0;
-
-        &:not(:last-child) {
-            margin-bottom: #{$gap};
-        }
-    }
-}
-
-@mixin inline {
-    > * {
-        display: inline-block;
-
-        &:not(:last-child)::after {
-            content: "|";
-            margin: 0 1rem;
-        }
+        @include list.structure;
 
         @content;
     }
@@ -84,79 +56,12 @@ $breakpoint: 1000px !default;
     }
 }
 
-@mixin block {
-    > * {
-        display: block;
-
-        &:not(:last-child)::after {
-            content: "";
-        }
-
-        @content;
-    }
-}
-
-@mixin bullet($bullet: "•", $size: 1em) {
-    > * {
-        &::before {
-            display: inline-block;
-            content: $bullet;
-            margin-left: -#{$size};
-            width: #{$size};
-            height: #{$size};
-            flex: 0 0 #{$size};
-
-            @content;
-        }
-    }
-}
-
-@mixin circle($size: 0.5em, $color: currentColor) {
-    > * {
-        &::before {
-            display: inline-block;
-            content: "";
-            margin: #{$size} #{$size} 0 -#{$size};
-            width: #{$size};
-            height: #{$size};
-            flex: 0 0 #{$size};
-            background: $color;
-            border-radius: 100%;
-
-            @content;
-        }
-    }
-}
-
-@mixin convert-to-grid($width: 20em, $gap: 2em) {
-    column-width: $width;
-    column-rule: 1px solid;
-    list-style: none;
-    margin: 0 -#{$gap};
-    overflow: hidden;
-
-    > * {
-        break-inside: avoid;
-        margin: 0 #{$gap};
-    }
-
-    @content;
-}
-
 @mixin grid($width: 20em, $gap: 2em) {
     #{$select} {
         &--grid {
-            @include convert-to-grid($width, $gap);
+            @include list.convert-to-grid($width, $gap);
 
             @content;
-        }
-    }
-}
-
-@mixin color($color: currentColor) {
-    > * {
-        &::before {
-            color: $color;
         }
     }
 }
@@ -164,7 +69,7 @@ $breakpoint: 1000px !default;
 @mixin square {
     #{$select} {
         &--square {
-            @include bullet("■") {
+            @include list.bullet("■") {
                 margin-left: -1.5em;
                 width: 1.5em;
             }
@@ -177,26 +82,9 @@ $breakpoint: 1000px !default;
 @mixin disc {
     #{$select} {
         &--disc {
-            @include bullet;
+            @include list.bullet;
 
             @content;
         }
-    }
-}
-
-@mixin background-icon($url: "") {
-    @include background-position {
-        background-image: url($url);
-
-        @content;
-    }
-}
-
-@mixin background-position {
-    @include bullet("") {
-        background-repeat: no-repeat;
-        background-position: center center;
-
-        @content;
     }
 }

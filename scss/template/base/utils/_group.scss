@@ -1,0 +1,14 @@
+$select: ".group" !default;
+
+// abstracts
+@use "./../abstracts/group";
+
+@mixin base {
+    #{$select} {
+        &__contain {
+            @include group.contain;
+        }
+
+        @content;
+    }
+}

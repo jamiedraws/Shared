@@ -1,0 +1,228 @@
+@use "sass:map";
+
+$select: ".order-table" !default;
+$mq: () !default;
+
+// config
+@use "./../config/units";
+
+// abstracts
+@use "./../abstracts/group";
+@use "./../abstracts/form";
+@use "./../abstracts/chart";
+
+$mq: map.merge(
+    (
+        mobile: units.set(600)
+    ),
+    $mq
+);
+
+@mixin base {
+    #{$select} {
+        @include chart.structure;
+
+        width: auto;
+
+        th {
+            background: black;
+            color: white;
+        }
+
+        td {
+            color: currentColor;
+            background: white;
+        }
+
+        input,
+        select {
+            @include form.field {
+                font-size: 1em;
+                font-weight: 400;
+
+                border: 1px solid currentColor;
+                border-radius: 0;
+            }
+
+            &::placeholder {
+                color: #cacaca;
+            }
+        }
+
+        select {
+            flex: 0 0 auto;
+
+            padding: 1rem 4rem 1rem 1.5rem;
+            background-image: url("data:image/svg+xml;charset=utf8,\
+            %3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8.1 4.6'%3E\
+                %3Cpath fill='currentColor' stroke-linecap='square' stroke-miterlimit='10' stroke='currentColor' d='M4,3.9L0.8,0.7 M7.2,0.7L4,3.9'%3E%3C/path%3E\
+            %3C/svg%3E");
+            background-size: 0.9em 0.9em;
+            background-repeat: no-repeat;
+            background-position: center right 1rem;
+        }
+
+        @content;
+    }
+
+    @include state-tax();
+}
+
+@mixin convert-to-item-grid {
+    @media all and (max-width: map.get($mq, mobile)) {
+        @include item-grid {
+            @content;
+        }
+    }
+}
+
+@mixin span-item-grid-row {
+    padding: 1em 0;
+    margin: 0 1em;
+    border-bottom: 1px solid;
+    font-weight: bold;
+    order: -1;
+}
+
+@mixin flex-item-grid-row($label: data-eflex--category-label) {
+    display: flex;
+    justify-content: space-between;
+    padding: 1em;
+    font-weight: normal;
+
+    @media all and (min-width: 370px) {
+        flex: 1 1 80px;
+        flex-direction: column;
+        text-align: center;
+        justify-content: flex-start;
+
+        &::before {
+            margin-bottom: 1rem;
+        }
+    }
+
+    &::before {
+        content: attr(#{$label});
+        font-size: 80%;
+        font-style: italic;
+        color: gray;
+    }
+}
+
+@mixin item-grid() {
+    #{$select} {
+        @include chart.block-layout;
+
+        thead {
+            display: none;
+        }
+
+        table {
+            > *:last-child {
+                tr:last-child {
+                    border-bottom-width: 1px;
+                }
+            }
+
+            td:nth-child(1n + 1) {
+                padding: 1em;
+            }
+        }
+
+        tr {
+            display: flex;
+            flex-wrap: wrap;
+            border-style: solid;
+            border-width: 1px 1px 0;
+            background: white;
+
+            &:nth-child(even) {
+                background: #fbfbfb;
+            }
+        }
+
+        td {
+            border: none;
+            flex: 1 1 100%;
+        }
+
+        tbody {
+            td {
+                background: none;
+            }
+        }
+
+        tfoot {
+            td {
+                flex: 1;
+
+                &:last-child {
+                    flex: 0 1 auto;
+                }
+            }
+        }
+
+        @content;
+    }
+}
+
+@mixin state-tax {
+    #{$select} {
+        [for="zc"] {
+            text-align: left;
+
+            @include group.contain;
+
+            margin: 0;
+
+            @media all and (min-width: map.get($mq, mobile)) {
+                align-items: center;
+                justify-content: flex-start;
+            }
+
+            @media all and (max-width: map.get($mq, mobile)) {
+                flex-direction: column;
+                align-items: flex-start;
+
+                input {
+                    flex: 1 1 auto;
+                    width: 100%;
+                    margin: 1rem 0 0;
+                }
+            }
+        }
+    }
+}
+
+@mixin order-item {
+    #{$select} {
+        &--order-item {
+            tbody {
+                tr:last-child {
+                    border-bottom-width: 1px;
+                }
+
+                td:first-child {
+                    border-bottom: 0;
+                    @include group.gutter;
+                    display: flex;
+                    flex-wrap: nowrap;
+                    justify-content: flex-start;
+                    padding: 1rem;
+
+                    @media all and (min-width: units.set(680, $media: true)) {
+                        flex: 1 1 20rem;
+                    }
+                }
+            }
+
+            #{$select} {
+                &__picture {
+                    max-width: 4rem;
+                }
+            }
+
+            @content;
+        }
+    }
+}

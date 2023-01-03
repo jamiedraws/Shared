@@ -1,0 +1,14 @@
+@mixin keyframes ( $name ) {
+    @-webkit-keyframes #{$name} {
+        @content;
+    }
+
+    @keyframes #{$name} {
+        @content;
+    }
+}
+
+@mixin vendor-rule ( $property, $value ) {
+    -webkit-#{$property}: $value;
+    #{$property}: $value;
+}

@@ -1,6 +1,6 @@
 $select: ".skip-link" !default;
 
-@mixin new {
+@mixin base {
     #{$select} {
         position: fixed;
         top: 0;

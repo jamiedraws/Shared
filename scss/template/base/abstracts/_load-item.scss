@@ -1,0 +1,13 @@
+@mixin from-top {
+    overflow: initial;
+
+    &::after {
+        bottom: auto;
+    }
+}
+
+@mixin set-offset-from-top($amount: 0) {
+    &::after {
+        top: calc(30vh - #{$amount});
+    }
+}

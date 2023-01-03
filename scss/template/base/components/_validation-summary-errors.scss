@@ -1,0 +1,36 @@
+$select: ".validation-summary-errors" !default;
+$color: #c00 !default;
+
+// abstracts
+@use "./../abstracts/list";
+
+@mixin base {
+    @include new {
+        @content;
+    }
+}
+
+@mixin new {
+    #{$select} {
+        color: #{$color};
+
+        > span {
+            display: block;
+            border-bottom: 1px solid;
+            padding-bottom: 1rem;
+            margin: 0 0 1rem;
+        }
+
+        > ul {
+            @include list.structure;
+            @include list.bullet;
+        }
+
+        li::before {
+            background: none;
+            color: currentColor;
+        }
+
+        @content;
+    }
+}

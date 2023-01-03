@@ -1,0 +1,57 @@
+@mixin contain {
+    picture,
+    [data-src-img],
+    [data-src-iframe] {
+        @content;
+    }
+}
+
+@mixin highlighter($background-color: black, $text-color: white) {
+    &::selection,
+    ::selection {
+        background: $text-color;
+        color: $background-color;
+    }
+
+    a:focus,
+    button:focus,
+    [tabindex="0"]:focus {
+        outline-color: $text-color;
+    }
+}
+
+@mixin color-map($background-color: black, $text-color: white) {
+    background: $background-color;
+    color: $text-color;
+
+    @include highlighter($background-color, $text-color);
+
+    @content;
+}
+
+@mixin image-background {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    z-index: 0;
+
+    picture,
+    img {
+        width: 100%;
+        height: auto;
+
+        @supports (object-fit: cover) {
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+}
+
+@mixin image-container {
+    position: relative;
+
+    @content;
+}

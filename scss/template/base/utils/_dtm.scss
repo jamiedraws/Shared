@@ -1,0 +1,11 @@
+$select: ".dtm";
+
+@mixin base {
+    #{$select} {
+        &__in {
+            background: white;
+        }
+
+        @content;
+    }
+}

@@ -5,8 +5,8 @@ $select: ".accordion" !default;
 }
 
 %active-outline {
-    outline-color: Highlight;
     outline-color: -webkit-focus-ring-color;
+    outline-color: Highlight;
     outline-style: auto;
 }
 
@@ -22,15 +22,16 @@ $select: ".accordion" !default;
             -webkit-appearance: none;
             appearance: none;
 
-            background: transparent;
-            border: none;
+            font: inherit;
+            text-align: inherit;
+
+            width: 100%;
             margin: 0;
             padding: 0;
-            display: block;
-            width: 100%;
-
-            font: inherit;
-            text-align: left;
+            background: transparent;
+            border: none;
+            color: inherit;
+            word-break: break-word; // getting this request a lot of words not breaking to next line
 
             @extend %inactive-outline;
 
@@ -49,9 +50,6 @@ $select: ".accordion" !default;
             &[hidden] {
                 display: none;
             }
-        }
-
-        &__content {
         }
 
         &--is-focused,

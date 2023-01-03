@@ -1,0 +1,85 @@
+@use "sass:meta";
+@use "sass:map";
+
+$view: (
+    root: ".dtm",
+    dtm: ".dtm__in",
+    dv: ".dtm__in--dv",
+    mv: ".dtm__in--mv"
+);
+
+@function element-exists($element) {
+    $result: false;
+    @if (meta.type-of($element) == string and $element != "") {
+        $result: true;
+    }
+    @return $result;
+}
+
+@mixin get-root {
+    #{map.get($view, root)} {
+        @content;
+    }
+}
+
+@mixin if-element ($element) {
+    @if (element-exists($element)) {
+        #{$element} {
+            @content;
+        }
+    } @else {
+        @content;
+    }
+}
+
+@mixin for-template($element: false, $scope: map.get($view, dtm)) {
+    @include if-element($scope) {
+        @include if-element($element) {
+            @content;
+        }
+    }
+}
+
+@mixin for-desktop($element: false, $scope: map.get($view, dv)) {
+    @include for-template($element, $scope) {
+        @content;
+    }
+}
+
+@mixin for-mobile($element: false, $scope: map.get($view, mv)) {
+    @include for-template($element, $scope) {
+        @content;
+    }
+}
+
+@mixin for-portrait($element: false, $scope: map.get($view, mv)) {
+    @media all and (orientation: portrait) {
+        @include for-mobile($element, $scope) {
+            @content;
+        }
+    }
+}
+
+@mixin for-landscape($element: false, $scope: map.get($view, mv)) {
+    @media all and (orientation: landscape) {
+        @include for-mobile($element, $scope) {
+            @content;
+        }
+    }
+}
+
+@mixin min($width: "600px", $element: false, $scope: map.get($view, mv)) {
+    @media all and (min-width: $width) {
+        @include for-mobile($element, $scope) {
+            @content;
+        }
+    }
+}
+
+@mixin max($width: "600px", $element: false, $scope: map.get($view, mv)) {
+    @media all and (max-width: $width) {
+        @include for-mobile($element, $scope) {
+            @content;
+        }
+    }
+}

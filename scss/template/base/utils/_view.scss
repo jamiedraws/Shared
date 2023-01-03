@@ -1,7 +1,8 @@
 $select: ".view" !default;
 $breakpoint: 1000px !default;
 
-@use "../utils/defer";
+// abstracts
+@use "./../abstracts/load-item";
 
 @mixin base {
     @include set-anchor-position();
@@ -11,9 +12,6 @@ $breakpoint: 1000px !default;
 
         &__anchor {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
         }
 
         &__in {
@@ -21,6 +19,7 @@ $breakpoint: 1000px !default;
         }
 
         &__scroll {
+            position: -webkit-sticky;
             position: sticky;
         }
 
@@ -32,29 +31,29 @@ $breakpoint: 1000px !default;
     #{$select} {
         &__anchor {
             @supports (position: sticky) {
-                top: -$static-amount;
+                top: calc(#{$static-amount} * -1);
             }
 
             @media all and (max-width: $breakpoint) {
-                top: -$dynamic-amount;
+                top: calc(#{$dynamic-amount} * -1);
             }
         }
 
         &__scroll {
             @supports (position: sticky) {
-                top: $static-amount;
+                top: calc(#{$static-amount} * -1);
             }
 
             @media all and (max-width: $breakpoint) {
-                top: $dynamic-amount;
+                top: calc(#{$dynamic-amount} * -1);
             }
         }
-    }
 
-    @include defer.set-offset($static-amount);
+        @include load-item.set-offset-from-top($static-amount);
 
-    @media all and (max-width: $breakpoint) {
-        @include defer.set-offset($dynamic-amount);
+        @media all and (max-width: $breakpoint) {
+            @include load-item.set-offset-from-top($dynamic-amount);
+        }
     }
 }
 
@@ -86,25 +85,52 @@ $breakpoint: 1000px !default;
 
         #{$select} {
             &__offset {
-                padding-top: $static-amount;
+                padding-top: #{$static-amount};
 
                 @media all and (max-width: $breakpoint) {
-                    padding-top: $dynamic-amount;
+                    padding-top: #{$dynamic-amount};
                 }
             }
 
             &__flow {
-                padding-top: $static-amount;
+                padding-top: #{$static-amount};
                 margin-bottom: -#{$static-amount};
 
                 @media all and (max-width: $breakpoint) {
-                    padding-top: $dynamic-amount;
+                    padding-top: #{$dynamic-amount};
                     margin-bottom: -#{$dynamic-amount};
                 }
             }
         }
 
         @content;
+    }
+}
+
+@mixin target {
+    #{$select} {
+        &__target {
+            position: relative;
+
+            &::before {
+                content: "";
+                position: absolute;
+                z-index: -1;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                margin: -1em;
+                outline: 1px solid black;
+                opacity: 0;
+            }
+        }
+
+        &__anchor:target ~ &__route-target &__target {
+            &::before {
+                opacity: 1;
+            }
+        }
     }
 }
 

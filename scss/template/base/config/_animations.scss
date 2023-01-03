@@ -1,0 +1,35 @@
+// config
+@use "vendor-rules";
+
+@mixin rotate-cycle {
+    @include vendor-rules.keyframes(rotate-cycle) {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+}
+
+@mixin fade-in {
+    @include vendor-rules.keyframes(fade-in) {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+}
+
+@mixin fade-out {
+    @include vendor-rules.keyframes(fade-out) {
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+        }
+    }
+}

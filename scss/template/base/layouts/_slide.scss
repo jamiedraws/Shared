@@ -13,10 +13,10 @@ $colors: map.merge(
 );
 
 // layouts
-@use "../../../slide/1/layouts/slide";
+@use "Shared/scss/extensions/slide/layouts/slide";
 
 // utilities
-@use "../../../slide/1/utilities/ui";
+@use "Shared/scss/extensions/slide/utilities/ui";
 
 @mixin convert-to-thumbnail-dot {
     width: 0.5em;
@@ -60,10 +60,18 @@ $colors: map.merge(
     }
 }
 
+@mixin base {
+    @include new {
+        @content;
+    }
+}
+
 @mixin new {
     @include slide.new;
 
     #{$select} {
+        position: relative;
+
         &__into {
             z-index: 2;
             &::-webkit-scrollbar {
@@ -199,12 +207,30 @@ $colors: map.merge(
 @mixin vimeo-carousel {
     #{$select} {
         &--vimeo-carousel {
-            #{$select} {
-                &:not(&--ready-for-vimeo) {
-                    opacity: 0;
-                }
+            &:not(#{$select}--ready-for-vimeo) {
+                opacity: 0;
             }
+
+            #{$select} {
+            }
+
             @content;
+        }
+    }
+}
+
+@mixin take-out-thumbnails($select: $select) {
+    #{$select} {
+        &__thumbnails {
+            display: none;
+        }
+    }
+}
+
+@mixin take-out-nav($select: $select) {
+    #{$select} {
+        &__nav {
+            display: none;
         }
     }
 }

@@ -1,0 +1,119 @@
+@use "sass:map";
+
+$select: ".social" !default;
+
+$colors: (
+    base-light: white,
+    linkedin: #117cb4,
+    linkedin-active: #29a9ec,
+    facebook: #3d5b97,
+    facebook-active: #5783dc,
+    google: white,
+    google-active: #4285f4,
+    twitter: #55acee,
+    youtube: #e62922,
+    instagram: #b32e8d
+);
+
+@mixin base {
+    #{$select} {
+        &__group {
+            display: flex;
+        }
+
+        &__item {
+            flex: 1;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            list-style: none;
+        }
+
+        &__button {
+            flex: 1;
+
+            padding: 1em;
+
+            &[disabled],
+            &[aria-disabled="true"] {
+                opacity: 0.3;
+                cursor: not-allowed;
+            }
+        }
+
+        &__icon {
+            width: 1em;
+            height: 1em;
+            fill: currentColor;
+
+            path {
+                transition: fill 0.3s ease-in-out;
+            }
+        }
+
+        @content;
+    }
+}
+
+@mixin autofill {
+    #{$select} {
+        &--autofill {
+            #{$select} {
+                &__group {
+                    box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.3);
+                }
+
+                &__icon {
+                    font-size: 2em;
+                }
+
+                &__button,
+                &__icon {
+                    transition: all 300ms ease-in-out;
+                }
+
+                &__button:not([disabled]),
+                &__button:not([aria-disabled="true"]) {
+                    &:hover,
+                    &:focus {
+                        #{$select}__icon {
+                            transform: rotateY(360deg);
+                        }
+                    }
+                }
+
+                &__linkedin {
+                    background: map.get($colors, linkedin);
+                    color: map.get($colors, base-light);
+                }
+
+                &__facebook {
+                    background: map.get($colors, facebook);
+                    color: map.get($colors, base-light);
+                }
+
+                &__twitter {
+                    background: map.get($colors, twitter);
+                    color: map.get($colors, base-light);
+                }
+
+                &__google {
+                    &:hover,
+                    &:focus {
+                        background: map.get($colors, google-active);
+                        color: map.get($colors, base-light);
+
+                        --color1: map.get($colors, base-light);
+                        --color2: map.get($colors, base-light);
+                        --color3: map.get($colors, base-light);
+                        --color4: map.get($colors, base-light);
+                    }
+                }
+            }
+
+            @content;
+        }
+    }
+}

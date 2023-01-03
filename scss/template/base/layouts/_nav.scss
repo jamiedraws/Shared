@@ -25,12 +25,18 @@ $mq: map.merge(
     $mq
 );
 
-@use "../../origin/components/nav" with (
+@use "./../../../components/nav" with (
     $background-color-dropdown: map.get($colors, background-dropdown),
     $font-color-dropdown: map.get($colors, text-dropdown)
 );
 
-@use "../../origin/utils/vendor-rules";
+@use "./../config/vendor-rules";
+
+@mixin base {
+    @include new {
+        @content;
+    }
+}
 
 @mixin new {
     @include is-hidden;

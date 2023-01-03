@@ -1,5 +1,3 @@
-$select: ".group" !default;
-
 @mixin gutter($gutter-contract: 0.5rem, $gutter-expand: $gutter-contract) {
     margin: -#{$gutter-contract};
 
@@ -69,12 +67,4 @@ $select: ".group" !default;
     @include gap($gap);
 
     @content;
-}
-
-@mixin new($select: $select, $gutter: 0.5rem) {
-    #{$select} {
-        @include contain($gutter);
-
-        @content;
-    }
 }

@@ -1,0 +1,48 @@
+$select: ".flyout" !default;
+
+@mixin base {
+    #{$select} {
+        position: relative;
+
+        &__container {
+            z-index: 1;
+            position: absolute;
+            top: 100%;
+        }
+
+        &__content {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+
+        @content;
+    }
+}
+
+@mixin is-hidden {
+    #{$select} {
+        &--is-hidden {
+            #{$select} {
+                &__content {
+                    opacity: 0;
+                    transform: translateY(10%);
+                }
+            }
+
+            @content;
+        }
+    }
+}
+
+@mixin is-disabled {
+    #{$select} {
+        &--is-disabled {
+            #{$select} {
+                &__container {
+                    visibility: hidden;
+                }
+            }
+
+            @content;
+        }
+    }
+}

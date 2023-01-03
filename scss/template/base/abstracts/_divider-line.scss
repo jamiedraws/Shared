@@ -1,23 +1,17 @@
-$select: ".divider-line" !default;
+@mixin base {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem;
 
-@mixin new {
-    #{$select} {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 1rem;
-
-        &::before,
-        &::after {
-            content: "";
-            flex: 1;
-            padding: 0.5px;
-            background: currentColor;
-            align-self: center;
-            margin: 0;
-        }
-
-        @content;
+    &::before,
+    &::after {
+        content: "";
+        flex: 1;
+        padding: 0.5px;
+        background: currentColor;
+        align-self: center;
+        margin: 0;
     }
 }
 

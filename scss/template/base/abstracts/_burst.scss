@@ -1,0 +1,30 @@
+@use "sass:map";
+
+$colors: (
+    background: black,
+    text: white,
+    border: black
+) !default;
+
+@mixin circle(
+    $size: 2.5em,
+    $background: map.get($colors, background),
+    $border-color: $background,
+    $text-color: map.get($colors, text)
+) {
+    text-transform: uppercase;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background: #{$background};
+    border: 2px solid #{$border-color};
+    color: #{$text-color};
+    font-size: 1.5em;
+    font-weight: bold;
+    line-height: 0;
+    width: #{$size};
+    max-width: #{$size};
+    height: #{$size};
+    border-radius: 100%;
+    position: relative;
+}

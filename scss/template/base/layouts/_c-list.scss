@@ -1,0 +1,38 @@
+$select: ".c-list" !default;
+
+@mixin base {
+    #{$select} {
+        @content;
+    }
+}
+
+@mixin horz {
+    #{$select} {
+        &--horz {
+            display: flex;
+            flex-wrap: wrap;
+
+            > li {
+                display: block;
+                flex: 1 1 25rem;
+            }
+
+            @content;
+        }
+    }
+}
+
+@mixin reset {
+    #{$select} {
+        &--reset {
+            > li {
+                display: block;
+            }
+
+            #{$select} {
+            }
+
+            @content;
+        }
+    }
+}

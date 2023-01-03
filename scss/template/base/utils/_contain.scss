@@ -1,0 +1,29 @@
+@use "sass:math";
+
+$select: ".contain" !default;
+
+// abstracts
+@use "./../abstracts/contain";
+
+@mixin base {
+    #{$select} {
+        @include format;
+
+        @content;
+    }
+}
+
+@mixin format {
+    @include contain.container;
+    @include contain.pseudo;
+
+    @content;
+}
+
+@mixin ratio($ratio: math.div(1, 1)) {
+    &::before {
+        @include contain.ratio($ratio);
+    }
+
+    @content;
+}

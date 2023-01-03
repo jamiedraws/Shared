@@ -1,5 +1,4 @@
 @use "sass:map";
-@use "close";
 
 $select: ".toast" !default;
 
@@ -14,9 +13,10 @@ $mq: (
     container: 600px
 ) !default;
 
-@mixin new {
-    @include close.new($select);
+// abstracts
+@use "./../abstracts/close";
 
+@mixin base {
     #{$select} {
         display: flex;
         align-items: center;
@@ -26,6 +26,10 @@ $mq: (
 
         [hidden] {
             display: none;
+        }
+
+        &__close {
+            @include close.visible;
         }
 
         &__stage {
@@ -49,6 +53,8 @@ $mq: (
         &--hidden {
             #{$select} {
                 &__close {
+                    @include close.hidden;
+
                     &::before {
                         transition-delay: 0.35s;
                     }

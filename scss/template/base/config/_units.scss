@@ -1,14 +1,63 @@
-// utils
-@use "../utils/unit-conversion" as convert;
+@use "sass:math";
+
+$base: 1 !default;
+
+$-pixel: 16;
+
+$base-pixel: $base * $-pixel;
+
+@function pixel-over-base(
+    $pixel: $pixel,
+    $base-pixel: $base-pixel,
+    $media: false
+) {
+    @if ($media) {
+        $base-pixel: $-pixel;
+    }
+
+    @return math.div($pixel, $base-pixel);
+}
+
+@function rem($pixel: $pixel, $media: false) {
+    @return #{pixel-over-base($pixel: $pixel, $media: $media)}rem;
+}
+
+@function em($pixel: $pixel, $media: false) {
+    @return #{pixel-over-base($pixel: $pixel, $media: $media)}em;
+}
 
 @function set($pixel) {
-    @return convert.to-rem($pixel, $media: true);
+    @return rem($pixel, $media: true);
 }
 
-@function em($pixel) {
-    @return convert.to-em($pixel);
+@function strip($number) {
+    @if type-of($number) == "number" and not unitless($number) {
+        @return math.div($number, ($number * 0 + 1));
+    }
+
+    @return $number;
 }
 
-@function rem($pixel) {
-    @return convert.to-rem($pixel);
+@mixin base-set($pixel) {
+    --base-number: #{pixel-over-base($pixel)};
+}
+
+@mixin base-em($pixel) {
+    @include base-set($pixel);
+
+    font-size: calc(var(--base-number) * 1em);
+}
+
+@mixin base-rem($pixel) {
+    @include base-set($pixel);
+
+    font-size: calc(var(--base-number) * 1rem);
+}
+
+@function cascade-em($pixel, $media: false) {
+    @return calc(em($pixel, $media) / var(--base-number));
+}
+
+@function cascade-rem($pixel, $media: false) {
+    @return calc(rem($pixel, $media) / var(--base-number));
 }

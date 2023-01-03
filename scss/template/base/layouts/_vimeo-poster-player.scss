@@ -23,7 +23,7 @@ $-vimeo-src: "https://player.vimeo.com/video/";
 
         &:not(&--is-ready) {
             @include iframe {
-                @extend %set-inert;
+                opacity: 0;
             }
         }
 

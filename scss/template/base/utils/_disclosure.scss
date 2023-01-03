@@ -1,0 +1,25 @@
+$select: ".disclosure" !default;
+
+@mixin base {
+    #{$select} {
+        @content;
+    }
+}
+
+@mixin active-state {
+    #{$select} {
+        &[aria-expanded="true"] > &__text-expanded,
+        &[aria-expanded="false"] > &__text-collapsed {
+            @content;
+        }
+    }
+}
+
+@mixin inactive-state {
+    #{$select} {
+        &[aria-expanded="true"] > &__text-collapsed,
+        &[aria-expanded="false"] > &__text-expanded {
+            @content;
+        }
+    }
+}

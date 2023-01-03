@@ -1,0 +1,11 @@
+$select: ".reviewTable" !default;
+
+@mixin base {
+    #{$select} {
+        & &__wrap {
+            padding: 0;
+        }
+
+        @content;
+    }
+}

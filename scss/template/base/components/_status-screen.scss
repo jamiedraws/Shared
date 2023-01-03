@@ -1,0 +1,272 @@
+$select: ".status-screen" !default;
+
+// abstracts
+@use "Shared/scss/templates/base/abstracts/position";
+@use "Shared/scss/templates/base/abstracts/close";
+@use "Shared/scss/templates/base/abstracts/checkmark";
+
+@mixin initialize {
+    @include base();
+    @include is-hidden();
+    @include is-busy();
+    @include is-done();
+    @include is-problem();
+    @include receive-text-input();
+    @include update-output();
+}
+
+@mixin base {
+    #{$select} {
+        --status-screen-background-color: hsla(0deg, 100%, 100%, 0.85);
+        --status-screen-font-color: black;
+
+        @media (prefers-color-scheme: dark) {
+            --status-screen-background-color: hsla(0deg, 100%, 0%, 0.85);
+            --status-screen-font-color: white;
+        }
+
+        &,
+        &[hidden] {
+            display: flex;
+        }
+
+        flex-direction: column;
+
+        @include position.center-absolute(fixed);
+        z-index: 10;
+
+        &[hidden] {
+            visibility: hidden;
+        }
+
+        &__output {
+            margin: 1em;
+            position: relative;
+
+            text-align: center;
+            width: 100%;
+
+            &::before,
+            &::after {
+                @include position.center-absolute;
+            }
+
+            &::before {
+                content: attr(data-status-screen-output);
+
+                opacity: 0;
+                transform: translateY(20%);
+            }
+
+            &::after {
+                content: attr(data-status-screen-input);
+
+                opacity: 1;
+            }
+
+            > output {
+                opacity: 0;
+            }
+        }
+
+        &__screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            transition: 0.3s ease-in-out;
+
+            background: var(--status-screen-background-color);
+            color: var(--status-screen-font-color);
+        }
+
+        &__status {
+            font-size: 1em;
+
+            width: 3em;
+            height: 3em;
+
+            position: relative;
+
+            &-positive,
+            &-negative {
+                transition: 0.3s ease-in-out;
+            }
+
+            &-positive {
+                @include position.center-absolute;
+            }
+
+            &-negative {
+                opacity: 0;
+            }
+        }
+
+        &__circle-icon {
+            @include checkmark.base;
+
+            > svg {
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        &__cross {
+            @include close.visible;
+            @include close.hidden;
+
+            transform: scale(0.8);
+
+            @media (prefers-color-scheme: dark) {
+                color: #c3bdbd;
+            }
+        }
+
+        &__close {
+            position: absolute;
+            top: 1em;
+            right: 1em;
+
+            transform: scale(0.5);
+
+            &:disabled {
+                cursor: not-allowed;
+                pointer-events: none;
+            }
+        }
+
+        @content;
+    }
+}
+
+@mixin is-hidden {
+    #{$select} {
+        &--is-hidden {
+            #{$select} {
+                &__screen {
+                    opacity: 0;
+                }
+            }
+
+            @content;
+        }
+    }
+}
+
+@mixin is-busy {
+    @include checkmark.in-progress-keyframes;
+
+    #{$select} {
+        &--is-busy {
+            #{$select} {
+                &__circle-icon {
+                    @include checkmark.in-progress;
+                }
+            }
+
+            @content;
+        }
+    }
+}
+
+@mixin is-done {
+    @include checkmark.is-checked-keyframes;
+
+    #{$select} {
+        &--is-done {
+            #{$select} {
+                &__cross {
+                    @include close.display;
+                }
+
+                &__circle-icon {
+                    @include checkmark.is-checked;
+                }
+            }
+
+            @content;
+        }
+    }
+}
+
+@mixin is-problem {
+    #{$select} {
+        &--is-problem {
+            #{$select} {
+                &__cross {
+                    @include close.display;
+                }
+
+                &__status {
+                    &-positive {
+                        opacity: 0;
+                        transform: translateY(50%);
+                    }
+
+                    &-negative {
+                        opacity: 1;
+                    }
+                }
+            }
+
+            @content;
+        }
+    }
+}
+
+@mixin receive-text-input {
+    @keyframes status-screen-fade-translate-text-out {
+        to {
+            opacity: 0;
+            transform: translateY(20%);
+        }
+    }
+
+    @keyframes status-screen-fade-translate-text-in {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    #{$select} {
+        &--receive-text-input {
+            #{$select} {
+                &__output {
+                    &::before {
+                        opacity: 1;
+                        transform: translateY(0);
+
+                        animation: status-screen-fade-translate-text-out 0.3s
+                            ease-in-out forwards;
+                    }
+
+                    &::after {
+                        opacity: 0;
+                        transform: translateY(20%);
+
+                        animation: status-screen-fade-translate-text-in 0.3s
+                            ease-in-out forwards;
+                    }
+                }
+            }
+
+            @content;
+        }
+    }
+}
+
+@mixin update-output {
+    #{$select} {
+        &--update-output {
+            #{$select} {
+                &__output {
+                }
+            }
+
+            @content;
+        }
+    }
+}

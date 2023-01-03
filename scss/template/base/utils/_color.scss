@@ -1,5 +1,0 @@
-@use "string";
-
-@function convert-to-hex($color) {
-    @return string.str-replace("#{$color}", "#", "%23");
-}

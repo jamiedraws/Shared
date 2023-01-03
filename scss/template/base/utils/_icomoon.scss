@@ -1,0 +1,10 @@
+@mixin reset {
+    [class*="icon-"] {
+        font-family: inherit;
+        font-weight: normal;
+        font-style: inherit;
+        font-variant: inherit;
+        line-height: inherit;
+        text-transform: inherit;
+    }
+}

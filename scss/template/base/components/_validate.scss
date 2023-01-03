@@ -18,7 +18,7 @@ $vertical-offset: 150% !default;
 
 $separator: "/" !default;
 
-@mixin new {
+@mixin base($attribute: $attribute) {
     #{$select} {
         &__group {
             #{$select} {
@@ -65,6 +65,13 @@ $separator: "/" !default;
             }
         }
 
+        & &__select #{$attribute} {
+            &:valid,
+            &:invalid {
+                color: currentColor;
+            }
+        }
+
         @content;
     }
 }
@@ -95,8 +102,9 @@ $separator: "/" !default;
 }
 
 @mixin is-valid {
-    outline-color: map.get($colors, valid);
-    border-color: map.get($colors, valid);
+    outline-color: currentColor;
+    border-color: currentColor;
+    color: map.get($colors, valid);
 
     & ~ #{$select}__group {
         color: map.get($colors, valid);
@@ -114,8 +122,9 @@ $separator: "/" !default;
 }
 
 @mixin is-invalid {
-    outline-color: map.get($colors, invalid);
-    border-color: map.get($colors, invalid);
+    outline-color: currentColor;
+    border-color: currentColor;
+    color: map.get($colors, invalid);
 
     & ~ #{$select}__group {
         color: map.get($colors, invalid);
@@ -137,6 +146,7 @@ $separator: "/" !default;
         &__is-valid-select {
             outline-color: map.get($colors, valid);
             border-color: map.get($colors, valid);
+            color: map.get($colors, valid);
 
             > #{$select} {
                 &__group {
@@ -162,6 +172,7 @@ $separator: "/" !default;
         &__is-invalid-select {
             outline-color: map.get($colors, invalid);
             border-color: map.get($colors, invalid);
+            color: map.get($colors, invalid);
 
             > #{$select} {
                 &__group {

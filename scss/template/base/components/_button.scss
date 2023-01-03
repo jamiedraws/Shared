@@ -1,30 +1,65 @@
-@use "../../origin/components/button";
-
 $select: ".button" !default;
 
-@mixin new(
-    $background-color: black,
-    $color-second: white,
-    $border-color: $background-color
-) {
-    @include button.model($select) {
-        border: 2px solid;
+// abstracts
+@use "./../abstracts/button";
 
-        @include color-map($background-color, $color-second, $border-color);
+@mixin base {
+    #{$select} {
+        @include button.container;
+        @include button.structure;
+
         @content;
     }
 }
 
-@mixin flat {
-    @include button.flat($select);
+@mixin round-border-color(
+    $background-color: black,
+    $color-second: white,
+    $border-color: $background-color
+) {
+    #{$select} {
+        &--round-border {
+            border: 2px solid;
+
+            @include color-map($background-color, $color-second, $border-color);
+
+            @content;
+        }
+    }
 }
 
 @mixin capsule {
-    @include button.capsule($select);
+    #{$select} {
+        &--capsule {
+            @include button.capsule;
+
+            &--circular {
+                @include button.capsule-circular;
+            }
+        }
+    }
 }
 
 @mixin classic {
-    @include button.classic($select);
+    #{$select} {
+        &--classic {
+            @include button.classic {
+                &--alpha > span::before {
+                    border: none;
+                    left: 0;
+                    box-shadow: 0.01em 0.04em 0.4em hsla(0, 0%, 0%, 0.7);
+                }
+            }
+        }
+    }
+}
+
+@mixin flat {
+    #{$select} {
+        &--flat {
+            @include button.flat;
+        }
+    }
 }
 
 @mixin color-map(
@@ -34,7 +69,6 @@ $select: ".button" !default;
 ) {
     background: $background-color;
     border-color: $border-color;
-    color: $text-color;
 
     &::before {
         background: $background-color;
@@ -42,6 +76,13 @@ $select: ".button" !default;
 
     &::after {
         background: $text-color;
+    }
+
+    &,
+    &:link,
+    &:visited {
+        color: $text-color;
+        text-decoration: none;
     }
 
     &:hover,
@@ -58,11 +99,12 @@ $select: ".button" !default;
 @mixin name-color-map(
     $namespace: "first",
     $background-color: black,
-    $text-color: white
+    $text-color: white,
+    $border-color: $background-color
 ) {
     #{$select} {
         &--#{$namespace} {
-            @include color-map($background-color, $text-color);
+            @include color-map($background-color, $text-color, $border-color);
         }
     }
 }

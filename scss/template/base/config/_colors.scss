@@ -1,0 +1,41 @@
+@use "sass:color";
+
+// config
+@use "string";
+@use "units";
+
+@function convert-to-hex($color) {
+    @return string.str-replace("#{$color}", "#", "%23");
+}
+
+@function encode-percent($color) {
+    @return unquote("#{units.strip($color)}%25");
+}
+
+@function get-rgba($color, $alpha: 1, $encode: false) {
+    $r: red($color);
+    $g: green($color);
+    $b: blue($color);
+
+    @if $encode {
+        $r: encode-percent($r);
+        $g: encode-percent($g);
+        $b: encode-percent($b);
+    }
+
+    @return unquote("rgba(#{$r}, #{$g}, #{$b}, #{$alpha})");
+}
+
+@function get-hsla($color, $alpha: 1, $encode: false) {
+    $h: hue($color);
+    $s: saturation($color);
+    $l: lightness($color);
+
+    @if $encode {
+        $h: units.strip($h);
+        $s: encode-percent($s);
+        $l: encode-percent($l);
+    }
+
+    @return unquote("hsla(#{$h}, #{$s}, #{$l}, #{$alpha})");
+}

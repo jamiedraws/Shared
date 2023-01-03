@@ -1,0 +1,18 @@
+$select: ".localization" !default;
+
+// abstracts
+@use "./../abstracts/list";
+
+@mixin base {
+    #{$select} {
+        @content;
+    }
+}
+
+@mixin inline-navigation-list {
+    #{$select} {
+        &--list {
+            @include list.inline;
+        }
+    }
+}

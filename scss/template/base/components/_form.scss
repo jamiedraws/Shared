@@ -1,6 +1,8 @@
 @use "sass:map";
-@use "../abstracts/group";
-@use "../utils/color";
+
+// abstracts
+@use "./../abstracts/group";
+@use "./../abstracts/form";
 
 $select: ".form" !default;
 
@@ -8,7 +10,9 @@ $colors: (
     border: currentColor,
     field-background: white,
     valid: green,
-    invalid: #c00
+    invalid: #c00,
+    checkmark-stroke: white,
+    checkmark-bkg: #7ac142
 ) !default;
 
 $mq: (
@@ -51,19 +55,7 @@ $mq: (
         }
 
         &__field {
-            flex: 1;
-            display: inline-flex;
-            align-items: center;
-            min-width: 0;
-
-            padding: 1rem;
-            margin: 0;
-            -webkit-appearance: none;
-            appearance: none;
-            border: 0;
-            background: white;
-            color: black;
-            font-family: inherit;
+            @include form.field;
         }
 
         &__error {
@@ -429,6 +421,63 @@ $mq: (
     }
 }
 
+@mixin radio(
+    $size: 2rem,
+    $border-radius: 0.5rem,
+    $icon-color: map.get($colors, checkmark-stroke),
+    $background-color: map.get($colors, checkmark-bkg)
+) {
+    #{$select} {
+        &__radio-label {
+            @include form.toggle-input {
+                & ~ #{$select}__radio,
+                & ~ #{$select}__label > #{$select}__radio {
+                    margin-right: 1rem;
+                }
+            }
+
+            @include form.toggle-input-checked {
+                & ~ #{$select}__radio,
+                & ~ #{$select}__label > #{$select}__radio {
+                    @include form.toggle-icon($icon-color, $background-color);
+                    background-size: 1.25em;
+                }
+            }
+
+            @include form.toggle-input-unchecked {
+                & ~ #{$select}__expando {
+                    display: none;
+                }
+            }
+
+            @include form.toggle-input-focus {
+                & ~ #{$select}__radio,
+                & ~ #{$select}__label > #{$select}__radio {
+                    outline: 3px solid;
+                }
+            }
+
+            @include form.toggle-input-disabled {
+                & ~ #{$select}__label {
+                    opacity: 0.5;
+                }
+            }
+        }
+
+        &__radio {
+            @include form.toggle-container($size, $border-radius);
+
+            border-radius: 100%;
+            border-color: map.get($colors, valid);
+            border-width: 0.2em;
+            background-color: #eef0ed;
+            font-size: 0.7rem;
+        }
+
+        @content;
+    }
+}
+
 @mixin checkbox(
     $size: 2rem,
     $border-radius: 0.5rem,
@@ -437,71 +486,75 @@ $mq: (
 ) {
     #{$select} {
         &__checkbox-label {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: flex-start;
-
-            #{$select}__label {
-                display: flex;
-            }
-
-            input[type="checkbox"],
-            input[type="radio"] {
-                opacity: 0;
-                position: absolute;
-                padding: 0;
-
-                &:checked ~ #{$select}__checkbox,
-                &:checked ~ #{$select}__label > #{$select}__checkbox {
-                    background-image: url("data:image/svg+xml;charset=utf8,\
-                        %3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E\
-                            %3Cpath fill='none' stroke-width='3px' stroke='#{color.convert-to-hex($icon-color)}' d='M1.73,12.91 8.1,19.28 22.79,4.59'%3E%3C/path%3E\
-                        %3C/svg%3E");
-                    background-size: 0.9em 0.9em;
-                    background-repeat: no-repeat;
-                    background-position: center;
-                    background-color: $background-color;
-                }
-
-                &:not(:checked) ~ #{$select}__expando {
-                    display: none;
-                }
-
-                ~ #{$select}__checkbox,
-                ~ #{$select}__label > #{$select}__checkbox {
+            @include form.toggle-input {
+                & ~ #{$select}__checkbox,
+                & ~ #{$select}__label > #{$select}__checkbox {
                     margin-right: 1rem;
                 }
+            }
 
-                &:focus ~ #{$select}__checkbox,
-                &:focus ~ #{$select}__label > #{$select}__checkbox {
+            @include form.toggle-input-checked {
+                & ~ #{$select}__checkbox,
+                & ~ #{$select}__label > #{$select}__checkbox {
+                    @include form.toggle-icon($icon-color, $background-color);
+                }
+            }
+
+            @include form.toggle-input-unchecked {
+                & ~ #{$select}__expando {
+                    display: none;
+                }
+            }
+
+            @include form.toggle-input-focus {
+                & ~ #{$select}__checkbox,
+                & ~ #{$select}__label > #{$select}__checkbox {
                     outline: 3px solid;
                 }
+            }
 
-                &:disabled ~ #{$select}__label {
+            @include form.toggle-input-disabled {
+                & ~ #{$select}__label {
                     opacity: 0.5;
                 }
             }
         }
 
         &__checkbox {
-            display: block;
-            -webkit-appearance: none;
-            border: 1px solid map.get($colors, border);
-            border-radius: #{$border-radius};
-            background: white;
-            font-family: inherit;
-            font-size: inherit;
-
-            width: #{$size};
-            height: #{$size};
-            flex: 0 0 #{$size};
-            padding: 0;
-            box-sizing: content-box;
-
-            position: relative;
+            @include form.toggle-container($size, $border-radius);
         }
 
         @content;
+    }
+}
+
+@mixin inline-combobox-label {
+    #{$select} {
+        &--inline-combobox-label {
+            label {
+                flex: 0 1 auto;
+
+                &:not(:first-of-type) {
+                    order: 0;
+                    flex: 1;
+                }
+            }
+
+            #{$select} {
+                &__field-label {
+                    @include group.contain;
+                    justify-content: flex-start;
+                    align-items: center;
+                    flex-wrap: nowrap;
+                }
+
+                &--select {
+                    flex: 0 1 6em;
+                }
+            }
+
+            @content;
+        }
     }
 }
 

@@ -1,0 +1,13 @@
+$outer: ".l-outer";
+
+@mixin base {
+    #{$outer} {
+        max-width: 1200px;
+        margin: auto;
+
+        &__in {
+            box-shadow: none;
+            border: 0;
+        }
+    }
+}

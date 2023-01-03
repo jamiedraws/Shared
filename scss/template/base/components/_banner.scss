@@ -1,14 +1,113 @@
 $select: ".banner" !default;
 $color: black !default;
 
-// components
-@use "../../origin/components/banner";
+// config
+@use "./../config/colors";
 
 @mixin base {
-    @include banner.model($selector: $select, $color: $color);
-
     #{$select} {
+        background: $color;
+        color: white;
+        text-align: center;
+        padding: 0.5em;
+        position: relative;
+        display: inline-block;
+
         @content;
+    }
+}
+
+@mixin ribbon {
+    #{$select} {
+        &--ribbon {
+            line-height: 1;
+
+            &::before,
+            &::after,
+            > span::before,
+            > span::after {
+                content: "";
+                position: absolute;
+                width: 1em;
+                border-style: solid;
+            }
+
+            &::before,
+            > span::before {
+                left: 0;
+                transform: translateX(-99%);
+            }
+
+            &::after,
+            > span::after {
+                right: 0;
+                transform: translateX(99%);
+            }
+
+            &::before {
+                border-color: transparent $color transparent transparent;
+                border-width: 1em 0.5em 0 0;
+                bottom: 0;
+            }
+
+            &::after {
+                border-color: transparent transparent transparent $color;
+                border-width: 1em 0 0 0.5em;
+                bottom: 0;
+            }
+
+            > span {
+                &::before {
+                    border-color: transparent $color transparent transparent;
+                    border-width: 0 0.5em 1em 0;
+                    top: 0;
+                }
+
+                &::after {
+                    border-color: transparent transparent transparent $color;
+                    border-width: 0 0 1em 0.5em;
+                    top: 0;
+                }
+            }
+
+            #{$select} {
+            }
+
+            @content;
+        }
+    }
+}
+
+@mixin drop {
+    #{$select} {
+        &--drop {
+            $color: colors.get-hsla($color, 1, false);
+            background: $color;
+            padding: 2em;
+            position: relative;
+
+            &::after {
+                content: "";
+                background: url("data:image/svg+xml;charset=utf8,\
+                %3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 153 88' preserveAspectRatio='xMidYMid'%3E\
+                    %3Cpolygon fill='#{$color}' points='75.5,86.33 149.11,1.33 1.89,1.33' /%3E\
+                %3C/svg%3E")
+                    no-repeat center center;
+                width: 2em;
+                height: 1em;
+                position: absolute;
+                left: 0;
+                right: 0;
+                margin: auto;
+                bottom: -0.9em;
+                font-size: 1em;
+            }
+
+            #{$select} {
+            }
+
+            @content;
+        }
     }
 }
 

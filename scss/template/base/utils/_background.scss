@@ -1,0 +1,40 @@
+$select: ".background" !default;
+
+// abstracts
+@use "./../abstracts/background";
+
+@mixin base {
+    #{$select} {
+        @content;
+    }
+}
+
+@mixin name-color-map(
+    $namespace: "first",
+    $background-color: black,
+    $text-color: white
+) {
+    #{$select} {
+        &--#{$namespace} {
+            @include background.color-map($background-color, $text-color);
+
+            @content;
+        }
+    }
+}
+
+@mixin image {
+    #{$select} {
+        &--image {
+            @include background.image-container;
+
+            #{$select} {
+                &__image {
+                    @include background.image-background;
+                }
+            }
+
+            @content;
+        }
+    }
+}

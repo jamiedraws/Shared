@@ -1,19 +1,17 @@
 $select: ".modal-dialog" !default;
 
-// components
-@use "../../css/template/base/components/close";
-
 // abstracts
-@use "../../css/template/base/abstracts/position";
+@use "./../abstracts/close";
+@use "./../abstracts/position";
 
 @mixin base {
-    @include close.new($select, "is-hidden");
-
     #{$select} {
         &__backdrop {
         }
 
         &__close {
+            @include close.visible;
+
             &::before,
             &::after {
                 transition-duration: 0.17s;
@@ -22,6 +20,10 @@ $select: ".modal-dialog" !default;
                     transition: none;
                 }
             }
+        }
+
+        &--is-hidden &__close {
+            @include close.hidden;
         }
 
         &__stage {

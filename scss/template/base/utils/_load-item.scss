@@ -1,0 +1,69 @@
+$select: ".load-item" !default;
+
+// config
+@use "./../config/vendor-rules";
+
+// abstracts
+@use "./../abstracts/tailspin";
+@use "./../abstracts/load-item";
+
+@mixin base {
+    #{$select} {
+        &::after {
+            @include vendor-rules.vendor-rule(animation-play-state, running);
+        }
+
+        &--success::after {
+            display: none;
+        }
+
+        & &__progress {
+            opacity: 0;
+            -webkit-transition: opacity 250ms ease-in-out;
+            transition: opacity 250ms ease-in-out;
+        }
+
+        & &__success {
+            opacity: 1;
+            -webkit-transition: opacity 250ms ease-in-out;
+            transition: opacity 250ms ease-in-out;
+        }
+
+        @media (prefers-reduced-motion) {
+            & &__progress,
+            & &__success {
+                transition: none;
+            }
+        }
+
+        &--failure::after {
+            @include tailspin.svg-cross;
+        }
+
+        @content;
+    }
+}
+
+@mixin from-top {
+    #{$select} {
+        &--from-top {
+            @include load-item.from-top;
+        }
+    }
+}
+
+@mixin set-offset-from-top($amount: 0) {
+    #{$select} {
+        &--from-top {
+            @include load-item.set-offset-from-top($amount: $amount);
+        }
+    }
+}
+
+@mixin remove-loader {
+    #{$select} {
+        &::after {
+            display: none;
+        }
+    }
+}

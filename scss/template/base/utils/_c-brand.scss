@@ -1,0 +1,41 @@
+$select: ".c-brand";
+$attribute: "[class*=" c-brand "]";
+
+@mixin base {
+    #{$select} {
+        @content;
+    }
+}
+
+@mixin set-font-size {
+    #{$attribute} {
+        &,
+        p,
+        select {
+            font-size: 16px;
+            font-size: max(16px, 1em);
+            line-height: 1.5;
+        }
+
+        [class*="button"],
+        [class*="o-box--btn"] {
+            font-size: 14px;
+            font-size: max(14px, 1em);
+            word-break: break-word;
+        }
+    }
+}
+
+@mixin form {
+    #{$select} {
+        &--form {
+            #{$select} {
+                &__fieldset {
+                    border: 0;
+                }
+            }
+
+            @content;
+        }
+    }
+}

@@ -1,0 +1,119 @@
+$select: ".offer" !default;
+
+@mixin base {
+    #{$select} {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        flex-wrap: wrap;
+
+        font-size: 1em;
+        font-weight: 600;
+        text-align: center;
+        line-height: 1;
+        position: relative;
+        color: #333333;
+
+        &__standfirst {
+            flex: 1 1 100%;
+            font-weight: normal;
+            font-size: 0.5em;
+            text-align: center;
+        }
+
+        &__disclaimer {
+            font-weight: normal;
+            line-height: 1;
+            text-align: left;
+            display: block;
+            font-size: 0.275em;
+            margin-top: 0.5em;
+        }
+
+        &__group {
+            display: flex;
+            font-style: italic;
+            margin-top: -0.5rem;
+        }
+
+        &__txt {
+            text-transform: capitalize;
+            font-size: 1.8em;
+            margin-bottom: 0.5em;
+        }
+
+        &__price {
+            font-weight: bold;
+            font-size: 4em;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            margin-top: -0.15em;
+        }
+
+        &__follow {
+            text-align: left;
+            position: relative;
+            top: 0.2em;
+            left: 0.1em;
+            max-width: 2.1em;
+        }
+
+        &__amt {
+            font-size: 2em;
+        }
+
+        &__currency,
+        &__cent {
+            font-size: inherit;
+        }
+
+        &__currency {
+            line-height: 1.4;
+        }
+
+        &__cent {
+            line-height: 1;
+            text-transform: none;
+
+            > span + small {
+                margin-left: -0.25em;
+            }
+
+            > small {
+                display: inline-block;
+            }
+        }
+
+        @content;
+    }
+}
+
+@mixin strike-through {
+    position: relative;
+
+    &::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 0.25em;
+        background: currentColor;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        transform-origin: center center;
+        transform: rotate(-15deg) scaleX(0.55) scaleY(2.5);
+        margin: auto;
+    }
+}
+
+@mixin discount-from {
+    #{$select} {
+        &--is-discount-from {
+            color: #747577;
+            font-size: 0.5em;
+            @include strike-through();
+        }
+    }
+}

@@ -1,0 +1,7 @@
+@mixin between-flow-elements($gap: 1rem) {
+    > * + * {
+        margin-top: #{$gap};
+
+        @content;
+    }
+}

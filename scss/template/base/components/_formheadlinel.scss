@@ -1,0 +1,13 @@
+$select: ".FormHeadlineL" !default;
+
+@mixin base {
+    #{$select} {
+        @content;
+    }
+}
+
+@mixin hide {
+    #{$select} {
+        display: none;
+    }
+}

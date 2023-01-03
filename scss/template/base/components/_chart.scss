@@ -1,0 +1,83 @@
+@use "sass:map";
+
+$select: ".chart" !default;
+
+$mq: () !default;
+$mq: map.merge(
+    (
+        mobile: 600px
+    ),
+    $mq
+);
+
+$colors: () !default;
+$colors: map.merge(
+    (
+        border: currentColor
+    ),
+    $colors
+);
+
+// abstracts
+@use "./../abstracts/chart";
+
+@mixin base($select: $select) {
+    #{$select} {
+        @include chart.structure;
+
+        @content;
+    }
+}
+
+@mixin convert-to-block-layout {
+    @media all and (max-width: map.get($mq, mobile)) {
+        @include block-layout;
+    }
+}
+
+@mixin block-layout($header-attribute: data-header) {
+    #{$select} {
+        @include chart.block-layout;
+    }
+}
+
+@mixin order($select: $select) {
+    #{$select} {
+        &--order {
+            #{$select} {
+                &__header {
+                    background: map.get($colors, border);
+                }
+
+                @media all and (max-width: map.get($mq, mobile)) {
+                    &__remove-on-stack {
+                        display: none;
+                    }
+
+                    &__footer {
+                        border: 1px solid map.get($colors, border);
+                        margin-bottom: 3rem;
+                        margin-top: 3rem;
+                        background: whitesmoke;
+                    }
+                }
+            }
+
+            @content;
+        }
+    }
+}
+
+@mixin grid($select: $select) {
+    #{$select} {
+        &--grid {
+            @media all and (min-width: map.get($mq, mobile)) {
+                @include chart.inline-grid;
+            }
+
+            @media all and (max-width: map.get($mq, mobile)) {
+                @include chart.block-grid;
+            }
+        }
+    }
+}

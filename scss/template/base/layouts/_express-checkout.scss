@@ -1,0 +1,97 @@
+@use "sass:map";
+
+$select: ".express-checkout" !default;
+
+$controller: "[data-element-controller-name]";
+
+// abstracts
+@use "./../abstracts/form";
+
+@mixin base(
+    $size: 2rem,
+    $border-radius: 0.5rem,
+    $icon-color: map.get(form.$colors, valid),
+    $background-color: white
+) {
+    #{$select} {
+        &__checkout-option {
+            flex-basis: 100%;
+            overflow: visible;
+
+            margin: 0 1em;
+            padding: 1em 0;
+            border: none;
+
+            & + #{$select}__checkout-option {
+                border-top: 0.1rem solid rgba(0, 0, 0, 0.25);
+            }
+
+            label {
+                flex-grow: 1;
+            }
+
+            @include form.toggle-input {
+                & ~ #{$select}__radio,
+                & ~ #{$select}__label > #{$select}__radio {
+                    margin-right: 1rem;
+                }
+            }
+
+            @include form.toggle-input-checked {
+                & ~ #{$select}__radio,
+                & ~ #{$select}__label > #{$select}__radio {
+                    @include form.toggle-icon($icon-color, $background-color);
+                }
+            }
+
+            @include form.toggle-input-focus {
+                & ~ #{$select}__radio,
+                & ~ #{$select}__label > #{$select}__radio {
+                    outline: 3px solid;
+                }
+            }
+
+            @include form.toggle-input-disabled {
+                & ~ #{$select}__label {
+                    opacity: 0.5;
+                }
+            }
+
+            img {
+                flex: 0 0 10rem;
+                max-width: 10rem;
+
+                min-width: 0;
+                min-height: 4rem;
+
+                border: 0.1rem solid #ccc;
+                margin: 0.5em;
+            }
+
+            [for="otCARD"] img {
+                flex: 0 0 3rem;
+                max-width: 3rem;
+
+                min-height: 2rem;
+            }
+        }
+
+        &__label {
+            flex: 1;
+            align-items: center;
+            margin: -0.5em;
+        }
+
+        &__radio {
+            @include form.toggle-container($size, $border-radius);
+        }
+
+        &__element {
+            &:not(#{$controller}) {
+                display: none;
+            }
+        }
+
+        @content;
+    }
+}
